@@ -116,7 +116,10 @@ export default function People() {
         lie_index: res.lie_index,
       },
     }));
-    if (res?.correct) loadList();
+    if (res?.correct) {
+      loadList();
+      refreshProfile();
+    }
   };
 
   return (
