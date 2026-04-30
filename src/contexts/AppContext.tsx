@@ -84,7 +84,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setProfile(null);
     }
     setIsAdmin(!!roles?.some((r) => r.role === "admin"));
-    return (prof as Profile | null) ?? null;
+    return (prof as unknown as Profile | null) ?? null;
   }, [langInitializedFromProfile]);
 
   const refreshProfile = useCallback(async (): Promise<Profile | null> => {
