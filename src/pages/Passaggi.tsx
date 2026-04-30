@@ -317,7 +317,7 @@ function ComposeRide({
   const { user, profile, refreshProfile } = useApp();
   const [date, setDate] = useState(editingPost?.ride_date || "");
   const [time, setTime] = useState(editingPost?.ride_time || "");
-  const [slots, setSlots] = useState(editingPost?.slots || 3);
+  const [slots, setSlots] = useState<string>(editingPost?.slots ? String(editingPost.slots) : "3");
   const [notes, setNotes] = useState(editingPost?.notes || "");
   const [origin, setOrigin] = useState(editingPost?.origin || "Resort Perdepera");
   const [destination, setDestination] = useState(editingPost?.destination || "Aeroporto Cagliari");
@@ -326,13 +326,18 @@ function ComposeRide({
 
   const submit = async () => {
     if (!user) return;
-    const parsed = ridePostSchema.safeParse({ ride_date: date, ride_time: time, slots, notes });
+    const slotsNum = parseInt(slots, 10);
+    if (!slots.trim() || isNaN(slotsNum) || slotsNum < 1 || slotsNum > 8) {
+      toast.error(lang === "it" ? "Inserisci un numero di posti valido (1-8)" : "Enter a valid number of seats (1-8)");
+      return;
+    }
+    const parsed = ridePostSchema.safeParse({ ride_date: date, ride_time: time, slots: slotsNum, notes });
     if (!parsed.success) {
       toast.error(t("requiredField"));
       return;
     }
 
-    if (editingPost && slots < editingPost.accepted_seats) {
+    if (editingPost && slotsNum < editingPost.accepted_seats) {
       toast.error(t("slotsBelowAcceptedError"));
       return;
     }
@@ -342,7 +347,7 @@ function ComposeRide({
       driver_id: user.id,
       ride_date: date,
       ride_time: time,
-      slots,
+      slots: slotsNum,
       notes: notes.trim() || null,
       origin: origin.trim() || "Resort Perdepera",
       destination: destination.trim() || "Aeroporto Cagliari",
@@ -413,7 +418,7 @@ function ComposeRide({
               min={1}
               max={8}
               value={slots}
-              onChange={(e) => setSlots(parseInt(e.target.value) || 1)}
+              onChange={(e) => setSlots(e.target.value)}
             />
           </div>
           <div>
