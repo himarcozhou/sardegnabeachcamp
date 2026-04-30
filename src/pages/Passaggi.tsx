@@ -195,29 +195,41 @@ export default function Passaggi() {
                   {t("pendingRequests")}
                 </Button>
               ) : myReq ? (
-                <div className="flex-1 flex flex-col gap-1">
-                  <div className={`text-sm font-bold rounded-full px-4 py-2 text-center
-                    ${myReq.status === "accepted" ? "bg-accent/20 text-accent" : ""}
-                    ${myReq.status === "pending" ? "bg-muted text-muted-foreground" : ""}
-                    ${myReq.status === "rejected" ? "bg-destructive/15 text-destructive" : ""}
-                  `}>
-                    {myReq.status === "accepted" && t("statusAccepted")}
-                    {myReq.status === "pending" && t("statusPending")}
-                    {myReq.status === "rejected" && t("statusRejected")}
-                    {myReq.status === "cancelled" && (lang === "it" ? "Annullata" : "Cancelled")}
+                myReq.status === "cancelled" ? (
+                  <Button
+                    onClick={() => {
+                      setOpenRequestFor(p);
+                      setEditingRequest(myReq);
+                    }}
+                    disabled={!p.is_open || seatsLeft === 0}
+                    className="gradient-festive text-white border-0 rounded-full font-bold flex-1"
+                  >
+                    {t("askAgain")}
+                  </Button>
+                ) : (
+                  <div className="flex-1 flex flex-col gap-1">
+                    <div className={`text-sm font-bold rounded-full px-4 py-2 text-center
+                      ${myReq.status === "accepted" ? "bg-accent/20 text-accent" : ""}
+                      ${myReq.status === "pending" ? "bg-muted text-muted-foreground" : ""}
+                      ${myReq.status === "rejected" ? "bg-destructive/15 text-destructive" : ""}
+                    `}>
+                      {myReq.status === "accepted" && t("statusAccepted")}
+                      {myReq.status === "pending" && t("statusPending")}
+                      {myReq.status === "rejected" && t("statusRejected")}
+                    </div>
+                    {myReq.status === "pending" && (
+                      <button
+                        onClick={() => {
+                          setOpenRequestFor(p);
+                          setEditingRequest(myReq);
+                        }}
+                        className="text-[10px] text-center text-muted-foreground hover:text-foreground font-semibold"
+                      >
+                        {t("edit")}
+                      </button>
+                    )}
                   </div>
-                  {myReq.status === "pending" && (
-                    <button
-                      onClick={() => {
-                        setOpenRequestFor(p);
-                        setEditingRequest(myReq);
-                      }}
-                      className="text-[10px] text-center text-muted-foreground hover:text-foreground font-semibold"
-                    >
-                      {t("edit")}
-                    </button>
-                  )}
-                </div>
+                )
               ) : (
                 <Button
                   onClick={() => setOpenRequestFor(p)}
@@ -404,14 +416,17 @@ function ComposeRide({
             />
           </div>
           {editingPost && (
-            <div className="flex items-center justify-between py-2">
-              <Label className="cursor-pointer">{lang === "it" ? "Richieste aperte" : "Open requests"}</Label>
-              <input 
-                type="checkbox" 
-                checked={isOpen} 
-                onChange={(e) => setIsOpen(e.target.checked)}
-                className="w-5 h-5 accent-primary"
-              />
+            <div className="py-2">
+              <div className="flex items-center justify-between">
+                <Label className="cursor-pointer">{t("acceptNewRequests")}</Label>
+                <input 
+                  type="checkbox" 
+                  checked={isOpen} 
+                  onChange={(e) => setIsOpen(e.target.checked)}
+                  className="w-5 h-5 accent-primary"
+                />
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">{t("acceptNewRequestsHelp")}</p>
             </div>
           )}
           <Button
@@ -470,16 +485,20 @@ function RequestDialog({
       luggage: luggage.trim(),
     };
 
+    const isReRequest = !!editingRequest && editingRequest.status !== "pending";
+    const updatePayload: any = { seats, luggage: luggage.trim() };
+    if (isReRequest) updatePayload.status = "pending";
+
     const { error } = editingRequest
-      ? await supabase.from("ride_requests").update({ seats, luggage: luggage.trim() }).eq("id", editingRequest.id)
+      ? await supabase.from("ride_requests").update(updatePayload).eq("id", editingRequest.id)
       : await supabase.from("ride_requests").insert(data);
     setSaving(false);
     if (error) {
-      if (error.code === "23505" && !editingRequest) toast.error(t("requestExists"));
+      if (error.code === "23505") toast.error(t("requestExists"));
       else toast.error(error.message);
       return;
     }
-    toast.success(editingRequest ? t("success") : t("requestSent"));
+    toast.success(isReRequest ? t("requestSent") : editingRequest ? t("success") : t("requestSent"));
     onSent();
   };
 
@@ -543,7 +562,7 @@ function ManageDialog({
   onClose: () => void;
   onChanged: () => void;
 }) {
-  const { t } = useT();
+  const { t, lang } = useT();
   const [reqs, setReqs] = useState<RideRequest[]>([]);
 
   const load = useCallback(async () => {
@@ -561,7 +580,7 @@ function ManageDialog({
     else setReqs([]);
   }, [post, load]);
 
-  const updateStatus = async (id: string, status: "accepted" | "rejected") => {
+  const updateStatus = async (id: string, status: "accepted" | "rejected" | "cancelled") => {
     const { error } = await supabase.from("ride_requests").update({ status }).eq("id", id);
     if (error) {
       toast.error(error.message);
@@ -570,6 +589,11 @@ function ManageDialog({
     toast.success(t("requestUpdated"));
     load();
     onChanged();
+  };
+
+  const removePassenger = async (id: string) => {
+    if (!confirm(t("removePassengerConfirm"))) return;
+    await updateStatus(id, "cancelled");
   };
 
   return (
@@ -611,7 +635,7 @@ function ManageDialog({
                   {r.status === "pending" && t("statusPending")}
                   {r.status === "accepted" && t("statusAccepted")}
                   {r.status === "rejected" && t("statusRejected")}
-                  {r.status === "cancelled" && "—"}
+                  {r.status === "cancelled" && t("statusCancelled")}
                 </span>
               </div>
               <div className="text-sm bg-muted rounded-xl p-2 mb-2 inline-flex items-start gap-2">
@@ -634,6 +658,15 @@ function ManageDialog({
                     <X className="h-4 w-4 mr-1" /> {t("reject")}
                   </Button>
                 </div>
+              )}
+              {r.status === "accepted" && (
+                <Button
+                  onClick={() => removePassenger(r.id)}
+                  variant="outline"
+                  className="w-full rounded-full font-bold text-destructive hover:text-destructive border-destructive/30 hover:bg-destructive/10"
+                >
+                  <Trash2 className="h-4 w-4 mr-1" /> {t("removePassenger")}
+                </Button>
               )}
             </div>
           ))}
