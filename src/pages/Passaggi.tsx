@@ -562,7 +562,7 @@ function ManageDialog({
   onClose: () => void;
   onChanged: () => void;
 }) {
-  const { t } = useT();
+  const { t, lang } = useT();
   const [reqs, setReqs] = useState<RideRequest[]>([]);
 
   const load = useCallback(async () => {
