@@ -126,28 +126,22 @@ export default function Home() {
 
         <div className="rounded-2xl bg-card border border-border shadow-card divide-y divide-border overflow-hidden">
           {top.length === 0 && <div className="p-4 text-sm text-muted-foreground">{t("nothingHere")}</div>}
-          {top.map((u, i) => {
-            const isMe = user && u.id === user.id;
-            return (
-              <div
-                key={u.id}
-                className={`flex items-center gap-3 p-3 ${isMe ? "bg-accent/10" : ""}`}
-              >
-                <span className={`w-7 text-center font-extrabold ${i === 0 ? "text-accent" : "text-muted-foreground"}`}>
-                  {i + 1}
-                </span>
-                <Avatar name={u.name} surname={u.surname} url={u.avatar_url} size={36} />
-                <div className="flex-1 truncate">
-                  <div className="font-semibold truncate">
-                    {u.name} {u.surname}
-                  </div>
-                </div>
-                <div className="font-extrabold text-primary">
-                  {u.points} <span className="text-xs font-medium text-muted-foreground">{t("points")}</span>
+          {top.map((u, i) => (
+            <div key={u.id} className="flex items-center gap-3 p-3">
+              <span className={`w-7 text-center font-extrabold ${i === 0 ? "text-accent" : "text-muted-foreground"}`}>
+                {i + 1}
+              </span>
+              <Avatar name={u.name} surname={u.surname} url={u.avatar_url} size={36} />
+              <div className="flex-1 truncate">
+                <div className="font-semibold truncate">
+                  {u.name} {u.surname}
                 </div>
               </div>
-            );
-          })}
+              <div className="font-extrabold text-primary">
+                {u.points} <span className="text-xs font-medium text-muted-foreground">{t("points")}</span>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
     </div>
