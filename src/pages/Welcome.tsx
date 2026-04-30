@@ -25,19 +25,19 @@ export default function Welcome() {
   const slides = [
     {
       image: welcome1,
-      title: lang === "it" ? "Benvenuto in Sardegna 🌊" : "Welcome to Sardegna 🌊",
+      title: lang === "it" ? "Beach Volley Camp in Sardegna 🌊🏐" : "Beach Volley Camp in Sardegna 🌊🏐",
       desc:
         lang === "it"
-          ? "Un beach camp tra rocce rosa, sabbia bianca e mare turchese. La nostra base sull'isola ti aspetta."
-          : "A beach camp among pink rocks, white sand and turquoise sea. Our island base is waiting for you.",
+          ? "Un camp di beach volley tra rocce rosa, sabbia bianca e mare turchese. La nostra base sull'isola ti aspetta."
+          : "A beach volley camp among pink rocks, white sand and turquoise sea. Our island base is waiting for you.",
     },
     {
       image: welcome2,
-      title: lang === "it" ? "Giornate al mare 🏖️" : "Days by the sea 🏖️",
+      title: lang === "it" ? "Partite e mare 🏐🏖️" : "Matches and sea 🏐🏖️",
       desc:
         lang === "it"
-          ? "Snorkeling, kayak, sole e relax sotto l'ombrellone. Vivi le calette più belle insieme al gruppo."
-          : "Snorkeling, kayak, sunbathing and chill under the umbrella. Enjoy the best coves with the group.",
+          ? "Allenamenti, tornei amichevoli, tuffi e relax sotto l'ombrellone. Vivi le calette più belle insieme al gruppo."
+          : "Trainings, friendly tournaments, swims and chill under the umbrella. Enjoy the best coves with the group.",
     },
     {
       image: welcome3,

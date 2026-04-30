@@ -21,8 +21,8 @@ const factSchema = z.object({
 
 const accountSchema = z.object({
   name: z.string().trim().min(1).max(40),
-  surname: z.string().trim().min(1).max(40),
-  password: z.string().min(4).max(100),
+  surname: z.string().trim().max(40).optional(),
+  password: z.string().min(4),
 });
 
 function makeEmail(name: string, surname: string) {
