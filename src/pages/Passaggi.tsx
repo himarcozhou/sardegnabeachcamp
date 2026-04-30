@@ -635,7 +635,7 @@ function ManageDialog({
                   {r.status === "pending" && t("statusPending")}
                   {r.status === "accepted" && t("statusAccepted")}
                   {r.status === "rejected" && t("statusRejected")}
-                  {r.status === "cancelled" && "—"}
+                  {r.status === "cancelled" && t("statusCancelled")}
                 </span>
               </div>
               <div className="text-sm bg-muted rounded-xl p-2 mb-2 inline-flex items-start gap-2">
@@ -658,6 +658,15 @@ function ManageDialog({
                     <X className="h-4 w-4 mr-1" /> {t("reject")}
                   </Button>
                 </div>
+              )}
+              {r.status === "accepted" && (
+                <Button
+                  onClick={() => removePassenger(r.id)}
+                  variant="outline"
+                  className="w-full rounded-full font-bold text-destructive hover:text-destructive border-destructive/30 hover:bg-destructive/10"
+                >
+                  <Trash2 className="h-4 w-4 mr-1" /> {t("removePassenger")}
+                </Button>
               )}
             </div>
           ))}
