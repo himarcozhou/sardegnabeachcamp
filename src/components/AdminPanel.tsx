@@ -8,10 +8,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Trash2, Megaphone } from "lucide-react";
+import { useConfirm } from "@/components/ConfirmDialog";
 
 export default function AdminPanel() {
   const { t } = useT();
   const { user } = useApp();
+  const confirmDialog = useConfirm();
   const [users, setUsers] = useState<any[]>([]);
   const [pointsEdit, setPointsEdit] = useState<Record<string, string>>({});
   const [announcements, setAnnouncements] = useState<any[]>([]);
@@ -63,7 +65,13 @@ export default function AdminPanel() {
   };
 
   const deleteUser = async (id: string, label: string) => {
-    if (!confirm(`${t("confirmDeleteUser")}\n\n${label}`)) return;
+    const ok = await confirmDialog({
+      title: t("confirmDeleteUser"),
+      description: label,
+      confirmText: t("delete"),
+      destructive: true,
+    });
+    if (!ok) return;
     const { data: sessionData } = await supabase.auth.getSession();
     const accessToken = sessionData?.session?.access_token;
     const res = await fetch(
