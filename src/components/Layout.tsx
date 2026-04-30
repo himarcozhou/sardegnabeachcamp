@@ -4,6 +4,7 @@ import { Home, MessageSquareLock, Car, Users, User } from "lucide-react";
 import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { LangToggle } from "@/components/LangToggle";
+import { NotificationsButton } from "@/components/NotificationsButton";
 
 const tabs = [
   { to: "/", icon: Home, key: "home" as const },
@@ -23,7 +24,10 @@ export function Layout({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-40 safe-top bg-background/80 backdrop-blur-lg border-b border-border">
         <div className="flex items-center justify-between px-4 h-14 max-w-2xl mx-auto w-full">
           <h1 className="text-lg font-bold text-primary">{t(current.key)}</h1>
-          <LangToggle size="sm" />
+          <div className="flex items-center gap-2">
+            <NotificationsButton />
+            <LangToggle size="sm" />
+          </div>
         </div>
       </header>
 

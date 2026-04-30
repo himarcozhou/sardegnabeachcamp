@@ -13,7 +13,16 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const VAPID_PUBLIC = Deno.env.get("VAPID_PUBLIC_KEY")!;
 const VAPID_PRIVATE = Deno.env.get("VAPID_PRIVATE_KEY")!;
-const VAPID_SUBJECT = Deno.env.get("VAPID_SUBJECT") || "mailto:admin@example.com";
+const RAW_SUBJECT = Deno.env.get("VAPID_SUBJECT") || "mailto:admin@example.com";
+// web-push requires https: or mailto: — normalize http(s) URLs to https, else fallback to mailto.
+function normalizeSubject(s: string): string {
+  const trimmed = (s || "").trim();
+  if (trimmed.startsWith("mailto:") || trimmed.startsWith("https:")) return trimmed;
+  if (trimmed.startsWith("http://")) return "https://" + trimmed.slice("http://".length);
+  if (trimmed.includes("@")) return "mailto:" + trimmed;
+  return "mailto:admin@example.com";
+}
+const VAPID_SUBJECT = normalizeSubject(RAW_SUBJECT);
 
 webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC, VAPID_PRIVATE);
 
