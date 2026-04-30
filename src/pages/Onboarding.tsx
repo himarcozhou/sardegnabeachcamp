@@ -318,6 +318,7 @@ export default function Onboarding() {
                   onChange={(e) => setSurname(e.target.value)}
                   maxLength={40}
                   autoComplete="family-name"
+                  required
                 />
               </div>
             </div>
