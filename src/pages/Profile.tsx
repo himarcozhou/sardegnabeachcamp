@@ -254,6 +254,9 @@ export default function Profile() {
         <Button onClick={doLogout} variant="ghost" className="w-full rounded-xl h-12 text-destructive">
           <LogOut className="h-4 w-4 mr-2" /> {t("logout")}
         </Button>
+        <Button onClick={deleteAccount} disabled={deleting} variant="ghost" className="w-full rounded-xl h-12 text-destructive">
+          <Trash2 className="h-4 w-4 mr-2" /> {deleting ? t("loading") : t("deleteAccount")}
+        </Button>
       </div>
 
       {/* Edit dialog */}
