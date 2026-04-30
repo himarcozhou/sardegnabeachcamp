@@ -19,11 +19,15 @@ const factSchema = z.object({
   is_lie: z.boolean(),
 });
 
-const accountSchema = z.object({
-  name: z.string().trim().min(1).max(40),
-  surname: z.string().trim().max(40).optional(),
-  password: z.string().min(4),
-});
+const makeAccountSchema = (msgs: { tooShort: string; needsNumber: string }) =>
+  z.object({
+    name: z.string().trim().min(1).max(40),
+    surname: z.string().trim().max(40).optional(),
+    password: z
+      .string()
+      .min(6, msgs.tooShort)
+      .regex(/\d/, msgs.needsNumber),
+  });
 
 function makeEmail(name: string, surname: string) {
   const base = surname ? `${name}.${surname}` : name;
