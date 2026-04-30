@@ -11,7 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { awardToast } from "@/lib/utils";
-import { LogOut, Pencil, Shield, Camera, Instagram, Trophy } from "lucide-react";
+import { LogOut, Pencil, Shield, Camera, Instagram, Trophy, Trash2 } from "lucide-react";
 import AdminPanel from "@/components/AdminPanel";
 
 export default function Profile() {
