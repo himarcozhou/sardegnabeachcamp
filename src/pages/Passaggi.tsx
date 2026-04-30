@@ -418,7 +418,7 @@ function ComposeRide({
               min={1}
               max={8}
               value={slots}
-              onChange={(e) => setSlots(parseInt(e.target.value) || 1)}
+              onChange={(e) => setSlots(e.target.value)}
             />
           </div>
           <div>
