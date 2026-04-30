@@ -13,7 +13,7 @@ interface TopUser { id: string; name: string; surname: string; avatar_url: strin
 export default function Home() {
   const { t } = useT();
   const nav = useNavigate();
-  const { profile, user } = useApp();
+  const { profile, user, refreshProfile } = useApp();
   const [anns, setAnns] = useState<Announcement[]>([]);
   const [top, setTop] = useState<TopUser[]>([]);
   const [participants, setParticipants] = useState(0);
