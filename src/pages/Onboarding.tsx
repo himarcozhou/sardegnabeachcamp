@@ -224,7 +224,7 @@ export default function Onboarding() {
     <div className="min-h-screen bg-background flex flex-col safe-top safe-bottom">
       {/* Top bar */}
       <div className="flex items-center justify-between px-5 pt-12 pb-2">
-        {step === 1 ? (
+        {step === 1 && !user ? (
           <button
             onClick={() => setStep(0)}
             className="h-9 w-9 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-smooth"
