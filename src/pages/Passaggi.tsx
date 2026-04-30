@@ -485,16 +485,20 @@ function RequestDialog({
       luggage: luggage.trim(),
     };
 
+    const isReRequest = !!editingRequest && editingRequest.status !== "pending";
+    const updatePayload: any = { seats, luggage: luggage.trim() };
+    if (isReRequest) updatePayload.status = "pending";
+
     const { error } = editingRequest
-      ? await supabase.from("ride_requests").update({ seats, luggage: luggage.trim() }).eq("id", editingRequest.id)
+      ? await supabase.from("ride_requests").update(updatePayload).eq("id", editingRequest.id)
       : await supabase.from("ride_requests").insert(data);
     setSaving(false);
     if (error) {
-      if (error.code === "23505" && !editingRequest) toast.error(t("requestExists"));
+      if (error.code === "23505") toast.error(t("requestExists"));
       else toast.error(error.message);
       return;
     }
-    toast.success(editingRequest ? t("success") : t("requestSent"));
+    toast.success(isReRequest ? t("requestSent") : editingRequest ? t("success") : t("requestSent"));
     onSent();
   };
 
