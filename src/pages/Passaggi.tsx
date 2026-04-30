@@ -63,6 +63,7 @@ const requestSchema = z.object({
 export default function Passaggi() {
   const { t, lang } = useT();
   const { user } = useApp();
+  const confirmDialog = useConfirm();
   const [posts, setPosts] = useState<RidePost[]>([]);
   const [myRequests, setMyRequests] = useState<Record<string, RideRequest>>({});
   const [composing, setComposing] = useState(false);
@@ -144,7 +145,16 @@ export default function Passaggi() {
                   </button>
                   <button
                     onClick={async () => {
-                      if (!confirm(lang === "it" ? "Eliminare?" : "Delete?")) return;
+                      const ok = await confirmDialog({
+                        title: lang === "it" ? "Eliminare il passaggio?" : "Delete this ride?",
+                        description:
+                          lang === "it"
+                            ? "Questa azione non può essere annullata."
+                            : "This action cannot be undone.",
+                        confirmText: t("delete"),
+                        destructive: true,
+                      });
+                      if (!ok) return;
                       const { error } = await supabase.from("ride_posts").delete().eq("id", p.id);
                       if (error) toast.error(error.message);
                       else load();
@@ -564,6 +574,7 @@ function ManageDialog({
   onChanged: () => void;
 }) {
   const { t, lang } = useT();
+  const confirmDialog = useConfirm();
   const [reqs, setReqs] = useState<RideRequest[]>([]);
 
   const load = useCallback(async () => {
