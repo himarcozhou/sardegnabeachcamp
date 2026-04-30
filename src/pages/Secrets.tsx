@@ -34,7 +34,7 @@ const commentSchema = z.string().trim().min(1).max(500);
 
 export default function Secrets() {
   const { t } = useT();
-  const { user, isAdmin } = useApp();
+  const { user, isAdmin, profile, refreshProfile } = useApp();
   const [items, setItems] = useState<PublicSecret[]>([]);
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
   const [composing, setComposing] = useState(false);
