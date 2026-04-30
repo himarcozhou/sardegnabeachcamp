@@ -234,7 +234,17 @@ export default function Profile() {
 
       {/* Actions */}
       <div className="space-y-2">
-        <Button onClick={() => setEditing(true)} variant="outline" className="w-full rounded-xl h-12 font-bold">
+        <Button onClick={() => {
+          setName(profile.name || "");
+          setSurname(profile.surname || "");
+          setIg(profile.instagram_tag || "");
+          const f = (profile.three_facts && profile.three_facts.length === 3)
+            ? profile.three_facts.map((x) => ({ text: x.text || "", is_lie: !!x.is_lie }))
+            : [{ text: "", is_lie: false }, { text: "", is_lie: false }, { text: "", is_lie: false }];
+          setFacts(f);
+          setLieIdx(f.findIndex((x) => x.is_lie));
+          setEditing(true);
+        }} variant="outline" className="w-full rounded-xl h-12 font-bold">
           <Pencil className="h-4 w-4 mr-2" /> {t("editProfile")}
         </Button>
         {isAdmin ? (
