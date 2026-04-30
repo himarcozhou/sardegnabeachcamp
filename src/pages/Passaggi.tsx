@@ -580,7 +580,7 @@ function ManageDialog({
     else setReqs([]);
   }, [post, load]);
 
-  const updateStatus = async (id: string, status: "accepted" | "rejected") => {
+  const updateStatus = async (id: string, status: "accepted" | "rejected" | "cancelled") => {
     const { error } = await supabase.from("ride_requests").update({ status }).eq("id", id);
     if (error) {
       toast.error(error.message);
@@ -589,6 +589,11 @@ function ManageDialog({
     toast.success(t("requestUpdated"));
     load();
     onChanged();
+  };
+
+  const removePassenger = async (id: string) => {
+    if (!confirm(t("removePassengerConfirm"))) return;
+    await updateStatus(id, "cancelled");
   };
 
   return (
