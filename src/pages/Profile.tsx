@@ -71,9 +71,11 @@ export default function Profile() {
     const { error: upErr } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
     if (upErr) { toast.error(upErr.message); return; }
     const { data } = supabase.storage.from("avatars").getPublicUrl(path);
+    const prevPoints = profile?.points ?? 0;
     await supabase.from("profiles").update({ avatar_url: data.publicUrl }).eq("id", user.id);
     toast.success(t("profileSaved"));
-    refreshProfile();
+    const fresh = await refreshProfile();
+    awardToast(prevPoints, fresh?.points, t("pointsEarned"));
   };
 
   const claimAdmin = async () => {
