@@ -13,6 +13,7 @@ import Onboarding from "./pages/Onboarding";
 import Home from "./pages/Home";
 import Secrets from "./pages/Secrets";
 import Games from "./pages/Games";
+import Passaggi from "./pages/Passaggi";
 import People from "./pages/People";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound.tsx";
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/" element={<ProtectedRoute><Layout><Home /></Layout></ProtectedRoute>} />
             <Route path="/secrets" element={<ProtectedRoute><Layout><Secrets /></Layout></ProtectedRoute>} />
             <Route path="/games" element={<ProtectedRoute><Layout><Games /></Layout></ProtectedRoute>} />
+            <Route path="/passaggi" element={<ProtectedRoute><Layout><Passaggi /></Layout></ProtectedRoute>} />
             <Route path="/people" element={<ProtectedRoute><Layout><People /></Layout></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Layout><Profile /></Layout></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
