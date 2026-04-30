@@ -604,7 +604,13 @@ function ManageDialog({
   };
 
   const removePassenger = async (id: string) => {
-    if (!confirm(t("removePassengerConfirm"))) return;
+    const ok = await confirmDialog({
+      title: t("removePassenger"),
+      description: t("removePassengerConfirm"),
+      confirmText: t("removePassenger"),
+      destructive: true,
+    });
+    if (!ok) return;
     await updateStatus(id, "cancelled");
   };
 
