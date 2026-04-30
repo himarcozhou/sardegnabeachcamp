@@ -31,7 +31,10 @@ export function Layout({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <main className="flex-1 max-w-2xl w-full mx-auto px-4 py-4 pb-24">{children}</main>
+      <main className="flex-1 max-w-2xl w-full mx-auto px-4 py-4 pb-24">
+        {children}
+        <div className="text-center text-xs text-muted-foreground/70 font-medium mt-8">ver 1.1</div>
+      </main>
 
       <nav
         className="fixed bottom-0 inset-x-0 z-40 safe-bottom bg-background/95 backdrop-blur-lg border-t border-border"
