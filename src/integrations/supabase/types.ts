@@ -573,6 +573,7 @@ export type Database = {
           id: string
           instagram_tag: string
           name: string
+          phone: string
           points: number
           surname: string
           three_facts: Json
