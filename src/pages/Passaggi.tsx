@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useApp } from "@/contexts/AppContext";
+import { awardToast } from "@/lib/utils";
 import { useT } from "@/lib/i18n";
 import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/ui/button";
@@ -282,7 +283,7 @@ function ComposeRide({
   editingPost: RidePost | null;
 }) {
   const { t, lang } = useT();
-  const { user } = useApp();
+  const { user, profile, refreshProfile } = useApp();
   const [date, setDate] = useState(editingPost?.ride_date || "");
   const [time, setTime] = useState(editingPost?.ride_time || "");
   const [slots, setSlots] = useState(editingPost?.slots || 3);
@@ -327,6 +328,11 @@ function ComposeRide({
       return;
     }
     toast.success(editingPost ? t("success") : t("rideCreated"));
+    if (!editingPost) {
+      const prev = profile?.points ?? 0;
+      const fresh = await refreshProfile();
+      awardToast(prev, fresh?.points, t("pointsEarned"));
+    }
     onDone();
   };
 

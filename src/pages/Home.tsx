@@ -6,6 +6,8 @@ import { useT } from "@/lib/i18n";
 import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/ui/button";
 import { Megaphone, Trophy, Users, MessageSquareLock, Sparkles, Star } from "lucide-react";
+import { RidesSection } from "@/components/RidesSection";
+import { NotificationsToggle } from "@/components/NotificationsToggle";
 
 interface Announcement { id: string; title: string; content: string; }
 interface TopUser { id: string; name: string; surname: string; avatar_url: string | null; points: number; }
@@ -72,6 +74,12 @@ export default function Home() {
           {t("addSecret")}
         </Button>
       </section>
+
+      {/* Notifications opt-in */}
+      <NotificationsToggle />
+
+      {/* Rides overview */}
+      <RidesSection />
 
       {/* Stats */}
       <section className="grid grid-cols-2 gap-3">
