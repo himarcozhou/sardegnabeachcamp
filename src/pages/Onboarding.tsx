@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar } from "@/components/Avatar";
 import { LangToggle } from "@/components/LangToggle";
 import { toast } from "sonner";
+import { awardToast } from "@/lib/utils";
 import { Instagram, Sparkles, Camera, ArrowLeft } from "lucide-react";
 import { hasSeenWelcome } from "@/pages/Welcome";
 
