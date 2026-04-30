@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useApp } from "@/contexts/AppContext";
+import { hasSeenWelcome } from "@/pages/Welcome";
 
 export function ProtectedRoute({ children }: { children: ReactNode }) {
   const { session, profile, loading } = useApp();
@@ -14,7 +15,7 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
     );
   }
   if (!session) {
-    return <Navigate to="/welcome" replace state={{ from: loc }} />;
+    return <Navigate to={hasSeenWelcome() ? "/onboarding" : "/welcome"} replace state={{ from: loc }} />;
   }
   if (profile && !profile.onboarded && loc.pathname !== "/onboarding") {
     return <Navigate to="/onboarding" replace />;
