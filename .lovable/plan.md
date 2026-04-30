@@ -1,29 +1,57 @@
-# Update Password Validation
+## Goal
 
-Change the password rule from "minimum 4 characters" to "minimum 6 characters AND must contain at least one number".
+Fix visual issues in dark mode for the **Pubblica Passaggio** dialog (and similar custom overlays) so all text, inputs, and surfaces render with proper contrast.
 
-## Files to change
+## Findings
 
-### 1. `src/pages/Onboarding.tsx` (signup)
-- Update `accountSchema.password` from `z.string().min(4)` to:
-  ```ts
-  z.string().min(6, ...).regex(/\d/, ...)
+The codebase mostly uses semantic tokens (good). The issues are concentrated in custom-built overlays (not shadcn `Dialog`):
+
+1. **`src/pages/Passaggi.tsx` → `ComposeRide`** (lines ~270–340): custom overlay using `bg-card`. In dark mode:
+   - Native HTML `<input type="date">` and `<input type="time">` inherit browser styling — the calendar/clock icon is black on dark background, nearly invisible.
+   - Border on the modal blends into the dark backdrop (no visible edge).
+   - No explicit `text-foreground` / `border-border` on the container, so contrast can be inconsistent.
+
+2. **`src/pages/Secrets.tsx`** (line 228): same custom overlay pattern — same date/time concerns where applicable.
+
+3. **`src/pages/Profile.tsx` line 131**: hardcoded `bg-white text-primary` on the avatar edit badge — stays white in dark mode (acceptable but inconsistent with theme; should use `bg-card text-foreground` or keep but ensure ring contrast).
+
+4. Native date/time pickers globally need a dark-mode `color-scheme: dark` hint so the browser renders the picker UI in dark.
+
+## Changes
+
+### `src/index.css`
+- Add a `color-scheme` declaration so native inputs (date, time, scrollbars) follow theme:
+  ```css
+  :root { color-scheme: light; }
+  .dark { color-scheme: dark; }
   ```
-- Update the password `<Input>` `minLength={4}` → `minLength={6}`.
-- Update the placeholder text:
-  - IT: "Min. 6 caratteri, almeno 1 numero"
-  - EN: "Min. 6 chars, at least 1 number"
-- Use translated error messages via `t(...)` (added to i18n).
+- Optionally add a small utility to invert the date/time picker indicator icon in dark mode:
+  ```css
+  .dark input[type="date"]::-webkit-calendar-picker-indicator,
+  .dark input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(1); }
+  ```
 
-### 2. `src/pages/Auth.tsx` (login)
-- Update `credSchema.password` from `min(4)` to `min(6)` and add `.regex(/\d/, ...)` so existing accounts with weaker passwords still get a clear client error if they mistype — but keep the actual auth check server-side. (Login validation can stay permissive; we'll just bump `min(4)` → `min(6)` to match. No regex on login to avoid blocking legacy accounts.)
-- Update `<Input minLength={4}>` → `minLength={6}`.
+### `src/pages/Passaggi.tsx` (ComposeRide modal)
+- Add `text-foreground border border-border` to the modal panel for explicit contrast and a visible edge:
+  ```tsx
+  <div className="w-full max-w-md bg-card text-foreground border border-border rounded-3xl ...">
+  ```
+- Ensure the close button has `text-muted-foreground hover:text-foreground`.
 
-### 3. `src/lib/i18n.ts`
-- Add two new keys used by the validation messages:
-  - `passwordTooShort`: "La password deve avere almeno 6 caratteri" / "Password must be at least 6 characters"
-  - `passwordNeedsNumber`: "La password deve contenere almeno un numero" / "Password must contain at least one number"
+### `src/pages/Secrets.tsx` (compose modal)
+- Apply the same `text-foreground border border-border` treatment to the panel for consistency.
 
-## Notes
-- No database/migration changes needed — Supabase Auth has no minimum password rule configured here, so this is purely client-side enforcement on signup.
-- Existing users keep their current passwords; the new rule applies only to new signups.
+### `src/pages/Profile.tsx`
+- Change the avatar edit badge from `bg-white text-primary` to `bg-card text-foreground border border-border` so it adapts to dark mode.
+
+## Out of scope
+
+- shadcn `Dialog`, `Sheet`, `Drawer`, `AlertDialog` — already token-based and dark-friendly.
+- Gradient buttons (`gradient-festive text-white`) — intentional and look correct in both themes.
+
+## Verification
+
+After changes, in dark mode open: Passaggi → "+", Secrets → "+", Profile avatar badge. Confirm:
+- Modal panel has visible border and readable text.
+- Date/time inputs show light icons and a dark-themed native picker.
+- No white surfaces on dark backgrounds (except intentional gradients).
