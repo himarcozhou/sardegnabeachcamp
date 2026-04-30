@@ -4,7 +4,7 @@ export type Lang = "it" | "en";
 
 export const dict = {
   it: {
-    appName: "Party Hub",
+    appName: "BVCamp Sardegna",
     home: "Home",
     secrets: "Segreti",
     games: "Giochi",
@@ -153,7 +153,7 @@ export const dict = {
     notifyRides: "Ricevi notifiche per i passaggi",
   },
   en: {
-    appName: "Party Hub",
+    appName: "BVCamp Sardegna",
     home: "Home",
     secrets: "Secrets",
     games: "Games",
