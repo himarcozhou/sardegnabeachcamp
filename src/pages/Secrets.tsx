@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Avatar } from "@/components/Avatar";
 import { toast } from "sonner";
+import { awardToast } from "@/lib/utils";
 import { Heart, MessageCircle, Plus, Send, X, EyeOff, Eye, Trash2, User as UserIcon } from "lucide-react";
 import { z } from "zod";
 
