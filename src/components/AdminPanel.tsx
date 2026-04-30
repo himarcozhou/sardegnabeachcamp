@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useT } from "@/lib/i18n";
+import { useApp } from "@/contexts/AppContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,6 +11,7 @@ import { Trash2, Megaphone } from "lucide-react";
 
 export default function AdminPanel() {
   const { t } = useT();
+  const { user } = useApp();
   const [users, setUsers] = useState<any[]>([]);
   const [pointsEdit, setPointsEdit] = useState<Record<string, string>>({});
   const [announcements, setAnnouncements] = useState<any[]>([]);
@@ -132,8 +134,20 @@ export default function AdminPanel() {
         <h4 className="font-bold">{t("allUsers")}</h4>
         <div className="space-y-2">
           {users.map((u) => (
-            <div key={u.id} className="flex items-center gap-2 p-2 rounded-lg bg-muted">
-              <div className="flex-1 text-sm font-medium truncate">{u.name} {u.surname}</div>
+            <div
+              key={u.id}
+              className={`flex items-center gap-2 p-2 rounded-lg ${
+                u.id === user?.id
+                  ? "bg-primary/15 ring-2 ring-primary"
+                  : "bg-muted"
+              }`}
+            >
+              <div className="flex-1 text-sm font-medium truncate">
+                {u.name} {u.surname}
+                {u.id === user?.id && (
+                  <span className="ml-2 text-xs text-primary font-bold">(you)</span>
+                )}
+              </div>
               <Input
                 type="number"
                 defaultValue={u.points}
