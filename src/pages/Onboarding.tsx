@@ -367,6 +367,26 @@ export default function Onboarding() {
               </div>
             </div>
 
+            <div className="space-y-1.5">
+              <Label htmlFor="phone">
+                {t("phone")}{" "}
+                <span className="text-muted-foreground">({t("optional")})</span>
+              </Label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+39 333 1234567"
+                  className="pl-9"
+                  maxLength={30}
+                  autoComplete="tel"
+                />
+              </div>
+            </div>
+
             <Button
               onClick={submitStep0}
               disabled={saving}
