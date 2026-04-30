@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { toast } from "sonner";
 import {
   Plus, X, Car, Calendar, Clock, Users as UsersIcon, ArrowRight,
-  Check, MapPin, Trash2, Luggage, Pencil, ArrowLeftRight,
+  Check, MapPin, Trash2, Luggage, Pencil, ArrowLeftRight, Phone,
 } from "lucide-react";
 import { z } from "zod";
 
@@ -96,6 +96,14 @@ export default function Passaggi() {
 
   return (
     <div className="space-y-3 animate-fade-in pb-20">
+      <div className="rounded-2xl border border-primary/20 bg-primary/5 p-3 flex items-start gap-2">
+        <Phone className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+        <div className="text-xs">
+          <div className="font-bold mb-0.5">{t("phoneTipTitle")}</div>
+          <p className="text-muted-foreground leading-snug">{t("phoneTip")}</p>
+        </div>
+      </div>
+
       {posts.length === 0 && (
         <div className="text-center py-12 text-muted-foreground">{t("noRides")}</div>
       )}
