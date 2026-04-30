@@ -128,7 +128,7 @@ export default function Profile() {
           <Avatar name={profile.name} surname={profile.surname} url={profile.avatar_url} size={72} />
           <button
             onClick={() => fileRef.current?.click()}
-            className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-white text-primary flex items-center justify-center shadow-card"
+            className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-card text-foreground border border-border flex items-center justify-center shadow-card"
             aria-label="Change photo"
           >
             <Camera className="h-4 w-4" />
