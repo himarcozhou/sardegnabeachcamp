@@ -106,6 +106,8 @@
 
 @layer base {
   * { @apply border-border; }
+  :root { color-scheme: light; }
+  .dark { color-scheme: dark; }
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -113,6 +115,11 @@
     overscroll-behavior-y: none;
   }
   html, body, #root { @apply min-h-screen; }
+
+  .dark input[type="date"]::-webkit-calendar-picker-indicator,
+  .dark input[type="time"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
 }
 
 @layer utilities {
