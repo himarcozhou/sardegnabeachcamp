@@ -174,6 +174,10 @@ export default function Welcome() {
             />
           ))}
         </div>
+
+        <div className="text-center text-xs text-muted-foreground/70 font-medium">
+          ver 1.0
+        </div>
       </div>
     </div>
   );
