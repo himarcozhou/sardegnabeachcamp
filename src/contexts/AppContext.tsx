@@ -8,6 +8,7 @@ export interface Profile {
   name: string;
   surname: string;
   instagram_tag: string | null;
+  phone: string | null;
   avatar_url: string | null;
   three_facts: { text: string; is_lie?: boolean }[] | null;
   points: number;

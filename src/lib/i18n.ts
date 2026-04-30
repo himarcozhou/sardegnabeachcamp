@@ -159,6 +159,7 @@ export const dict = {
     confirmDeleteAccount: "Sei sicuro? Verranno eliminati definitivamente il tuo account e tutti i tuoi dati. Questa azione è irreversibile.",
     accountDeleted: "Account eliminato",
     editFacts: "Modifica i 3 fatti",
+    phone: "Telefono",
   },
   en: {
     appName: "BVCamp Sardegna",
@@ -316,6 +317,7 @@ export const dict = {
     confirmDeleteAccount: "Are you sure? Your account and all your data will be permanently deleted. This action cannot be undone.",
     accountDeleted: "Account deleted",
     editFacts: "Edit 3 facts",
+    phone: "Phone",
   },
 } as const;
 
