@@ -22,7 +22,7 @@ const factSchema = z.object({
 const makeAccountSchema = (msgs: { tooShort: string; needsNumber: string }) =>
   z.object({
     name: z.string().trim().min(1).max(40),
-    surname: z.string().trim().max(40).optional(),
+    surname: z.string().trim().min(1).max(40),
     password: z
       .string()
       .min(6, msgs.tooShort)
@@ -310,8 +310,7 @@ export default function Onboarding() {
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="surname">
-                  {t("surname")}{" "}
-                  <span className="text-muted-foreground">({t("optional")})</span>
+                  {t("surname")}
                 </Label>
                 <Input
                   id="surname"
