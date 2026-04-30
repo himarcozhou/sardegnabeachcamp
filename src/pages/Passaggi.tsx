@@ -15,6 +15,7 @@ import {
   Check, MapPin, Trash2, Luggage, Pencil, ArrowLeftRight, Phone,
 } from "lucide-react";
 import { z } from "zod";
+import { useConfirm } from "@/components/ConfirmDialog";
 
 interface RidePost {
   id: string;
