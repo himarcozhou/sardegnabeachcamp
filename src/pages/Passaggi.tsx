@@ -195,29 +195,41 @@ export default function Passaggi() {
                   {t("pendingRequests")}
                 </Button>
               ) : myReq ? (
-                <div className="flex-1 flex flex-col gap-1">
-                  <div className={`text-sm font-bold rounded-full px-4 py-2 text-center
-                    ${myReq.status === "accepted" ? "bg-accent/20 text-accent" : ""}
-                    ${myReq.status === "pending" ? "bg-muted text-muted-foreground" : ""}
-                    ${myReq.status === "rejected" ? "bg-destructive/15 text-destructive" : ""}
-                  `}>
-                    {myReq.status === "accepted" && t("statusAccepted")}
-                    {myReq.status === "pending" && t("statusPending")}
-                    {myReq.status === "rejected" && t("statusRejected")}
-                    {myReq.status === "cancelled" && (lang === "it" ? "Annullata" : "Cancelled")}
+                myReq.status === "cancelled" ? (
+                  <Button
+                    onClick={() => {
+                      setOpenRequestFor(p);
+                      setEditingRequest(myReq);
+                    }}
+                    disabled={!p.is_open || seatsLeft === 0}
+                    className="gradient-festive text-white border-0 rounded-full font-bold flex-1"
+                  >
+                    {t("askAgain")}
+                  </Button>
+                ) : (
+                  <div className="flex-1 flex flex-col gap-1">
+                    <div className={`text-sm font-bold rounded-full px-4 py-2 text-center
+                      ${myReq.status === "accepted" ? "bg-accent/20 text-accent" : ""}
+                      ${myReq.status === "pending" ? "bg-muted text-muted-foreground" : ""}
+                      ${myReq.status === "rejected" ? "bg-destructive/15 text-destructive" : ""}
+                    `}>
+                      {myReq.status === "accepted" && t("statusAccepted")}
+                      {myReq.status === "pending" && t("statusPending")}
+                      {myReq.status === "rejected" && t("statusRejected")}
+                    </div>
+                    {myReq.status === "pending" && (
+                      <button
+                        onClick={() => {
+                          setOpenRequestFor(p);
+                          setEditingRequest(myReq);
+                        }}
+                        className="text-[10px] text-center text-muted-foreground hover:text-foreground font-semibold"
+                      >
+                        {t("edit")}
+                      </button>
+                    )}
                   </div>
-                  {myReq.status === "pending" && (
-                    <button
-                      onClick={() => {
-                        setOpenRequestFor(p);
-                        setEditingRequest(myReq);
-                      }}
-                      className="text-[10px] text-center text-muted-foreground hover:text-foreground font-semibold"
-                    >
-                      {t("edit")}
-                    </button>
-                  )}
-                </div>
+                )
               ) : (
                 <Button
                   onClick={() => setOpenRequestFor(p)}
