@@ -52,6 +52,12 @@ export default function Profile() {
   };
 
   const save = async () => {
+    // Validate facts
+    const cleanedFacts = facts.map((f) => ({ text: (f.text || "").trim().slice(0, 200), is_lie: false }));
+    if (cleanedFacts.some((f) => !f.text)) { toast.error(t("fillAllFacts")); return; }
+    if (lieIdx < 0 || lieIdx > 2) { toast.error(t("pickLie")); return; }
+    cleanedFacts[lieIdx].is_lie = true;
+
     setSaving(true);
     const cleanedIg = ig.trim().replace(/^@/, "").slice(0, 30) || null;
     const prevPoints = profile?.points ?? 0;
@@ -59,6 +65,7 @@ export default function Profile() {
       name: name.trim().slice(0, 40),
       surname: surname.trim().slice(0, 40),
       instagram_tag: cleanedIg,
+      three_facts: cleanedFacts,
     }).eq("id", user.id);
     setSaving(false);
     if (error) { toast.error(error.message); return; }
@@ -66,6 +73,35 @@ export default function Profile() {
     setEditing(false);
     const fresh = await refreshProfile();
     awardToast(prevPoints, fresh?.points, t("pointsEarned"));
+  };
+
+  const deleteAccount = async () => {
+    if (!confirm(t("confirmDeleteAccount"))) return;
+    setDeleting(true);
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData?.session?.access_token;
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-user`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+          },
+          body: JSON.stringify({}),
+        }
+      );
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data?.error) { toast.error(data?.error || "Error"); setDeleting(false); return; }
+      toast.success(t("accountDeleted"));
+      await signOut();
+      nav("/auth", { replace: true });
+    } catch (e: any) {
+      toast.error(e?.message || "Error");
+      setDeleting(false);
+    }
   };
 
   const onFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
