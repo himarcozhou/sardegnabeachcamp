@@ -1,0 +1,137 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Beach palette: #011f4b #03396c #005b96 #6497b1 #b3cde0 */
+    --background: 204 47% 96%;
+    --foreground: 213 97% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 213 97% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 213 97% 15%;
+
+    --primary: 213 97% 15%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 204 100% 29%;
+
+    --secondary: 204 47% 79%;
+    --secondary-foreground: 213 97% 15%;
+
+    --accent: 204 100% 29%;
+    --accent-foreground: 0 0% 100%;
+
+    --muted: 204 47% 92%;
+    --muted-foreground: 213 94% 22%;
+
+    --destructive: 0 75% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 202 32% 80%;
+    --input: 202 32% 80%;
+    --ring: 213 97% 15%;
+
+    --radius: 1rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    --gradient-festive: linear-gradient(135deg, hsl(213 97% 15%), hsl(213 94% 22%), hsl(204 100% 29%));
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(204 47% 96%));
+    --gradient-hero: linear-gradient(135deg, hsl(213 97% 15% / 0.95), hsl(204 100% 29% / 0.95));
+
+    --shadow-soft: 0 4px 16px -4px hsl(213 97% 15% / 0.2);
+    --shadow-glow: 0 8px 32px -8px hsl(204 100% 29% / 0.45);
+    --shadow-card: 0 2px 12px -2px hsl(0 0% 0% / 0.08);
+
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark {
+    --background: 213 60% 6%;
+    --foreground: 204 47% 92%;
+
+    --card: 213 70% 10%;
+    --card-foreground: 204 47% 92%;
+
+    --popover: 213 70% 10%;
+    --popover-foreground: 204 47% 92%;
+
+    --primary: 204 47% 79%;
+    --primary-foreground: 213 97% 12%;
+    --primary-glow: 202 32% 64%;
+
+    --secondary: 213 70% 14%;
+    --secondary-foreground: 204 47% 92%;
+
+    --accent: 204 100% 40%;
+    --accent-foreground: 0 0% 100%;
+
+    --muted: 213 50% 14%;
+    --muted-foreground: 202 32% 70%;
+
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 213 50% 20%;
+    --input: 213 50% 20%;
+    --ring: 204 47% 79%;
+
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    --gradient-festive: linear-gradient(135deg, hsl(213 97% 15%), hsl(213 94% 22%), hsl(204 100% 29%));
+    --gradient-card: linear-gradient(180deg, hsl(213 70% 11%), hsl(213 60% 6%));
+    --shadow-soft: 0 4px 16px -4px hsl(0 0% 0% / 0.5);
+    --shadow-glow: 0 8px 32px -8px hsl(204 100% 40% / 0.4);
+    --shadow-card: 0 2px 12px -2px hsl(0 0% 0% / 0.4);
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior-y: none;
+  }
+  html, body, #root { @apply min-h-screen; }
+}
+
+@layer utilities {
+  .gradient-festive { background: var(--gradient-festive); }
+  .gradient-hero { background: var(--gradient-hero); }
+  .shadow-soft { box-shadow: var(--shadow-soft); }
+  .shadow-glow { box-shadow: var(--shadow-glow); }
+  .shadow-card { box-shadow: var(--shadow-card); }
+  .transition-smooth { transition: var(--transition-smooth); }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+  .safe-top { padding-top: env(safe-area-inset-top); }
+  .animate-fade-in { animation: fadeIn 0.3s ease-out; }
+  .animate-slide-up { animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
