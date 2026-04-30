@@ -326,13 +326,18 @@ function ComposeRide({
 
   const submit = async () => {
     if (!user) return;
-    const parsed = ridePostSchema.safeParse({ ride_date: date, ride_time: time, slots, notes });
+    const slotsNum = parseInt(slots, 10);
+    if (!slots.trim() || isNaN(slotsNum) || slotsNum < 1 || slotsNum > 8) {
+      toast.error(lang === "it" ? "Inserisci un numero di posti valido (1-8)" : "Enter a valid number of seats (1-8)");
+      return;
+    }
+    const parsed = ridePostSchema.safeParse({ ride_date: date, ride_time: time, slots: slotsNum, notes });
     if (!parsed.success) {
       toast.error(t("requiredField"));
       return;
     }
 
-    if (editingPost && slots < editingPost.accepted_seats) {
+    if (editingPost && slotsNum < editingPost.accepted_seats) {
       toast.error(t("slotsBelowAcceptedError"));
       return;
     }
@@ -342,7 +347,7 @@ function ComposeRide({
       driver_id: user.id,
       ride_date: date,
       ride_time: time,
-      slots,
+      slots: slotsNum,
       notes: notes.trim() || null,
       origin: origin.trim() || "Resort Perdepera",
       destination: destination.trim() || "Aeroporto Cagliari",
