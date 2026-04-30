@@ -241,6 +241,7 @@ export const dict = {
     cantGuessSelf: "You can't guess yourself",
     secretsCount: "Secrets",
     yourPointsHighlight: "Your points",
+    pointsEarned: "+{n} points 🎉",
     passaggi: "Rides",
     postRide: "Post a ride",
     rideDay: "Day",
