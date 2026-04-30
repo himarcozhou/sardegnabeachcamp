@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { toast } from "sonner";
 import {
   Plus, X, Car, Calendar, Clock, Users as UsersIcon, ArrowRight,
-  Check, MapPin, Trash2, Luggage, Pencil,
+  Check, MapPin, Trash2, Luggage, Pencil, ArrowLeftRight,
 } from "lucide-react";
 import { z } from "zod";
 
@@ -288,7 +288,7 @@ function ComposeRide({
   const [time, setTime] = useState(editingPost?.ride_time || "");
   const [slots, setSlots] = useState(editingPost?.slots || 3);
   const [notes, setNotes] = useState(editingPost?.notes || "");
-  const [origin, setOrigin] = useState(editingPost?.origin || "Resort");
+  const [origin, setOrigin] = useState(editingPost?.origin || "Resort Perdepera");
   const [destination, setDestination] = useState(editingPost?.destination || "Aeroporto Cagliari");
   const [isOpen, setIsOpen] = useState(editingPost?.is_open ?? true);
   const [saving, setSaving] = useState(false);
@@ -313,7 +313,7 @@ function ComposeRide({
       ride_time: time,
       slots,
       notes: notes.trim() || null,
-      origin: origin.trim() || "Resort",
+      origin: origin.trim() || "Resort Perdepera",
       destination: destination.trim() || "Aeroporto Cagliari",
       is_open: isOpen,
     };
@@ -347,12 +347,20 @@ function ComposeRide({
         </div>
 
         <div className="space-y-3">
-          <div className="grid grid-cols-2 gap-3">
-            <div>
+          <div className="flex items-end gap-2">
+            <div className="flex-1">
               <Label>{t("rideFrom")}</Label>
               <Input value={origin} onChange={(e) => setOrigin(e.target.value)} maxLength={60} />
             </div>
-            <div>
+            <button
+              type="button"
+              onClick={() => { const o = origin; setOrigin(destination); setDestination(o); }}
+              aria-label="Swap"
+              className="h-10 w-10 shrink-0 rounded-xl bg-muted hover:bg-muted/70 flex items-center justify-center transition-smooth"
+            >
+              <ArrowLeftRight className="h-4 w-4" />
+            </button>
+            <div className="flex-1">
               <Label>{t("rideTo")}</Label>
               <Input value={destination} onChange={(e) => setDestination(e.target.value)} maxLength={60} />
             </div>
