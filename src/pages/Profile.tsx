@@ -25,7 +25,13 @@ export default function Profile() {
   const [name, setName] = useState(profile?.name || "");
   const [surname, setSurname] = useState(profile?.surname || "");
   const [ig, setIg] = useState(profile?.instagram_tag || "");
+  const initialFacts = (profile?.three_facts && profile.three_facts.length === 3)
+    ? profile.three_facts.map((f) => ({ text: f.text || "", is_lie: !!f.is_lie }))
+    : [{ text: "", is_lie: false }, { text: "", is_lie: false }, { text: "", is_lie: false }];
+  const [facts, setFacts] = useState(initialFacts);
+  const [lieIdx, setLieIdx] = useState<number>(initialFacts.findIndex((f) => f.is_lie));
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   if (!profile || !user) return <div className="text-center py-10 text-muted-foreground">{t("loading")}</div>;
