@@ -226,10 +226,10 @@ export default function Secrets() {
       {/* Composer */}
       {composing && (
         <div className="fixed inset-0 z-50 bg-black/60 flex items-end sm:items-center justify-center p-4 animate-fade-in">
-          <div className="w-full max-w-md bg-card rounded-3xl p-5 shadow-glow animate-slide-up">
+          <div className="w-full max-w-md bg-card text-card-foreground border border-border rounded-3xl p-5 shadow-glow animate-slide-up">
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-bold">{t("addSecret")}</h3>
-              <button onClick={() => setComposing(false)} aria-label="Close">
+              <button onClick={() => setComposing(false)} aria-label="Close" className="text-muted-foreground hover:text-foreground transition-smooth">
                 <X className="h-5 w-5" />
               </button>
             </div>
