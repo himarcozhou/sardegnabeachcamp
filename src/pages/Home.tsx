@@ -20,6 +20,10 @@ export default function Home() {
   const [secretsCount, setSecretsCount] = useState(0);
 
   useEffect(() => {
+    refreshProfile();
+  }, [refreshProfile]);
+
+  useEffect(() => {
     (async () => {
       const now = new Date().toISOString();
 
