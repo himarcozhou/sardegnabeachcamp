@@ -165,6 +165,13 @@ export const dict = {
     accountDeleted: "Account eliminato",
     editFacts: "Modifica i 3 fatti",
     phone: "Telefono",
+    installApp: "Installa l'app",
+    installAppDesc: "Aggiungila alla schermata Home per un accesso più rapido",
+    install: "Installa",
+    iosInstallTitle: "Installa su iPhone",
+    iosInstallStep1: "Tocca il pulsante Condividi",
+    iosInstallStep2: "Scorri e tocca \"Aggiungi a Home\"",
+    iosInstallStep3: "Conferma toccando \"Aggiungi\" in alto a destra.",
   },
   en: {
     appName: "BVCamp Sardegna",
@@ -328,6 +335,13 @@ export const dict = {
     accountDeleted: "Account deleted",
     editFacts: "Edit 3 facts",
     phone: "Phone",
+    installApp: "Install app",
+    installAppDesc: "Add it to your home screen for faster access",
+    install: "Install",
+    iosInstallTitle: "Install on iPhone",
+    iosInstallStep1: "Tap the Share button",
+    iosInstallStep2: "Scroll and tap \"Add to Home Screen\"",
+    iosInstallStep3: "Confirm by tapping \"Add\" in the top-right corner.",
   },
 } as const;
 
