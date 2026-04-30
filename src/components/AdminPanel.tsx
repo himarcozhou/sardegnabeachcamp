@@ -60,6 +60,28 @@ export default function AdminPanel() {
     if (error) toast.error(error.message); else { toast.success(t("success")); load(); }
   };
 
+  const deleteUser = async (id: string, label: string) => {
+    if (!confirm(`${t("confirmDeleteUser")}\n\n${label}`)) return;
+    const { data: sessionData } = await supabase.auth.getSession();
+    const accessToken = sessionData?.session?.access_token;
+    const res = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-user`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+        },
+        body: JSON.stringify({ target_id: id }),
+      }
+    );
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || data?.error) { toast.error(data?.error || "Error"); return; }
+    toast.success(t("userDeleted"));
+    load();
+  };
+
   return (
     <div className="space-y-6">
       {/* Announcements */}
