@@ -12,7 +12,7 @@ import { Avatar } from "@/components/Avatar";
 import { LangToggle } from "@/components/LangToggle";
 import { toast } from "sonner";
 import { awardToast } from "@/lib/utils";
-import { Instagram, Sparkles, Camera, ArrowLeft } from "lucide-react";
+import { Instagram, Sparkles, Camera, ArrowLeft, Phone } from "lucide-react";
 import { hasSeenWelcome } from "@/pages/Welcome";
 
 const factSchema = z.object({
@@ -56,6 +56,7 @@ export default function Onboarding() {
   const [surname, setSurname] = useState(profile?.surname || "");
   const [password, setPassword] = useState("");
   const [instagram, setInstagram] = useState(profile?.instagram_tag || "");
+  const [phone, setPhone] = useState(profile?.phone || "");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(profile?.avatar_url || null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -119,6 +120,7 @@ export default function Onboarding() {
 
     try {
       const cleanedIg = instagram.trim().replace(/^@/, "").slice(0, 30) || null;
+      const cleanedPhone = phone.trim().slice(0, 30) || null;
 
       if (!user) {
         // Create new account
