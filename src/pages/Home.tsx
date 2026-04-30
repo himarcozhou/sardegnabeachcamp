@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Megaphone, Trophy, Users, MessageSquareLock, Sparkles, Star } from "lucide-react";
 import { RidesSection } from "@/components/RidesSection";
 import { NotificationsToggle } from "@/components/NotificationsToggle";
+import { InstallButton } from "@/components/InstallButton";
+
+const INSTALL_CARD_DISMISS_KEY = "install_card_dismissed_session";
 
 interface Announcement { id: string; title: string; content: string; }
 interface TopUser { id: string; name: string; surname: string; avatar_url: string | null; points: number; }
@@ -20,6 +23,9 @@ export default function Home() {
   const [top, setTop] = useState<TopUser[]>([]);
   const [participants, setParticipants] = useState(0);
   const [secretsCount, setSecretsCount] = useState(0);
+  const [installCardDismissed, setInstallCardDismissed] = useState(
+    () => sessionStorage.getItem(INSTALL_CARD_DISMISS_KEY) === "1"
+  );
 
   useEffect(() => {
     refreshProfile();
@@ -74,6 +80,17 @@ export default function Home() {
           {t("addSecret")}
         </Button>
       </section>
+
+      {/* Install app banner */}
+      {!installCardDismissed && (
+        <InstallButton
+          variant="card"
+          onDismiss={() => {
+            sessionStorage.setItem(INSTALL_CARD_DISMISS_KEY, "1");
+            setInstallCardDismissed(true);
+          }}
+        />
+      )}
 
       {/* Notifications opt-in */}
       <NotificationsToggle />

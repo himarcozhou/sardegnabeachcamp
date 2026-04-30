@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { awardToast } from "@/lib/utils";
 import { LogOut, Pencil, Shield, Camera, Instagram, Trophy, Trash2, Phone } from "lucide-react";
 import AdminPanel from "@/components/AdminPanel";
+import { InstallButton } from "@/components/InstallButton";
 
 export default function Profile() {
   const { t, lang, setLang } = useT();
@@ -220,6 +221,7 @@ export default function Profile() {
 
       {/* Settings */}
       <section className="rounded-2xl bg-card border border-border p-4 shadow-card space-y-4">
+        <InstallButton variant="row" />
         <div className="flex items-center justify-between">
           <Label htmlFor="dm">{t("darkMode")}</Label>
           <Switch id="dm" checked={document.documentElement.classList.contains("dark")} onCheckedChange={toggleDark} />

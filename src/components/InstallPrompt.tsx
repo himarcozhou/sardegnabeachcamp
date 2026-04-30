@@ -1,31 +1,19 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Download, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-}
+import { useInstallPrompt } from "@/hooks/useInstallPrompt";
 
 export function InstallPrompt() {
-  const [evt, setEvt] = useState<BeforeInstallPromptEvent | null>(null);
-  const [visible, setVisible] = useState(false);
+  const { canInstall, hasNativePrompt, promptInstall } = useInstallPrompt();
+  const [dismissed, setDismissed] = useState(
+    () => localStorage.getItem("install_dismissed") === "1"
+  );
 
-  useEffect(() => {
-    if (localStorage.getItem("install_dismissed") === "1") return;
-    const handler = (e: Event) => {
-      e.preventDefault();
-      setEvt(e as BeforeInstallPromptEvent);
-      setVisible(true);
-    };
-    window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
-  }, []);
-
-  if (!visible || !evt) return null;
+  // Auto popup only when the browser fired the native prompt event.
+  if (dismissed || !canInstall || !hasNativePrompt) return null;
 
   const dismiss = () => {
-    setVisible(false);
+    setDismissed(true);
     localStorage.setItem("install_dismissed", "1");
   };
 
@@ -37,7 +25,7 @@ export function InstallPrompt() {
         size="sm"
         variant="secondary"
         onClick={async () => {
-          await evt.prompt();
+          await promptInstall();
           dismiss();
         }}
       >
