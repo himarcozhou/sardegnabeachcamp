@@ -19,7 +19,7 @@ const credSchema = z.object({
     .min(3)
     .max(80)
     .regex(/^[a-zA-Z0-9._\- ]+$/, "Only letters, numbers, . _ -"),
-  password: z.string().min(4).max(100),
+  password: z.string().min(1).max(100),
 });
 
 // Username here is "name surname" or any unique handle the user chose.
@@ -116,7 +116,7 @@ export default function Auth() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                minLength={4}
+                minLength={1}
                 maxLength={100}
                 autoComplete="current-password"
               />

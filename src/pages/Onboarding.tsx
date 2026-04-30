@@ -105,7 +105,11 @@ export default function Onboarding() {
 
   // Step 0: create account (or update existing profile)
   const submitStep0 = async () => {
-    const parsed = accountSchema.safeParse({ name, surname, password: user ? "xxxx" : password });
+    const accountSchema = makeAccountSchema({
+      tooShort: t("passwordTooShort"),
+      needsNumber: t("passwordNeedsNumber"),
+    });
+    const parsed = accountSchema.safeParse({ name, surname, password: user ? "xxxxx1" : password });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
       return;
@@ -327,10 +331,10 @@ export default function Onboarding() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  minLength={4}
+                  minLength={6}
                   autoComplete="new-password"
                   required
-                  placeholder={lang === "it" ? "Min. 4 caratteri" : "Min. 4 chars"}
+                  placeholder={t("passwordHint")}
                 />
               </div>
             )}
