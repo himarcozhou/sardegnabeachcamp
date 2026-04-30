@@ -155,6 +155,7 @@ export default function Onboarding() {
             name: name.trim(),
             surname: surname.trim(),
             instagram_tag: cleanedIg,
+            phone: cleanedPhone,
             ...(avatarUrl ? { avatar_url: avatarUrl } : {}),
           })
           .eq("id", newUserId);
@@ -173,6 +174,7 @@ export default function Onboarding() {
             name: name.trim(),
             surname: surname.trim(),
             instagram_tag: cleanedIg,
+            phone: cleanedPhone,
             ...(avatarUrl ? { avatar_url: avatarUrl } : {}),
           })
           .eq("id", user.id);
