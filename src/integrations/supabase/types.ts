@@ -130,12 +130,46 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          data: Json | null
+          id: string
+          read: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          data?: Json | null
+          id?: string
+          read?: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          data?: Json | null
+          id?: string
+          read?: boolean
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
           awarded_avatar: boolean
           awarded_facts: boolean
           awarded_instagram: boolean
+          awarded_rides_count: number
           created_at: string
           dark_mode: boolean
           id: string
@@ -153,6 +187,7 @@ export type Database = {
           awarded_avatar?: boolean
           awarded_facts?: boolean
           awarded_instagram?: boolean
+          awarded_rides_count?: number
           created_at?: string
           dark_mode?: boolean
           id: string
@@ -170,6 +205,7 @@ export type Database = {
           awarded_avatar?: boolean
           awarded_facts?: boolean
           awarded_instagram?: boolean
+          awarded_rides_count?: number
           created_at?: string
           dark_mode?: boolean
           id?: string
@@ -181,6 +217,36 @@ export type Database = {
           surname?: string
           three_facts?: Json | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          user_agent?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -547,6 +613,16 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      notify_user: {
+        Args: {
+          _body: string
+          _data: Json
+          _title: string
+          _type: string
+          _user_id: string
+        }
+        Returns: undefined
       }
     }
     Enums: {
