@@ -102,6 +102,7 @@ export default function Secrets() {
       toast.error(t("requiredField"));
       return;
     }
+    const prevPoints = profile?.points ?? 0;
     const { error } = await supabase.from("secrets").insert({ author_id: user.id, content: parsed.data });
     if (error) {
       toast.error(error.message);
@@ -110,6 +111,8 @@ export default function Secrets() {
     setNewContent("");
     setComposing(false);
     toast.success(t("secretPosted"));
+    const fresh = await refreshProfile();
+    awardToast(prevPoints, fresh?.points, t("pointsEarned"));
   };
 
   const toggleLike = async (id: string) => {
