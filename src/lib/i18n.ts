@@ -105,6 +105,7 @@ export const dict = {
     cantGuessSelf: "Non puoi indovinare te stesso",
     secretsCount: "Segreti",
     yourPointsHighlight: "I tuoi punti",
+    pointsEarned: "+{n} punti 🎉",
     passaggi: "Passaggi",
     postRide: "Pubblica passaggio",
     rideDay: "Giorno",
