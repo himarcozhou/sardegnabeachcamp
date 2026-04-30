@@ -200,6 +200,7 @@ export default function Onboarding() {
       return;
     }
     setSaving(true);
+    const prevPoints = profile?.points ?? 0;
     const { error } = await supabase
       .from("profiles")
       .update({ three_facts: facts as any, onboarded: true })
@@ -210,7 +211,8 @@ export default function Onboarding() {
       return;
     }
     toast.success(t("success"));
-    await refreshProfile();
+    const fresh = await refreshProfile();
+    awardToast(prevPoints, fresh?.points, t("pointsEarned"));
     nav("/", { replace: true });
   };
 
