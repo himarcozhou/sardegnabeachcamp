@@ -267,7 +267,7 @@ function CommentsThread({
   onPosted: () => void;
 }) {
   const { t } = useT();
-  const { user } = useApp();
+  const { user, profile, refreshProfile } = useApp();
   const [text, setText] = useState("");
   const [likedC, setLikedC] = useState<Set<string>>(new Set());
 
