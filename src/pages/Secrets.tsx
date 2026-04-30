@@ -287,6 +287,7 @@ function CommentsThread({
     if (!user) return;
     const parsed = commentSchema.safeParse(text);
     if (!parsed.success) return;
+    const prevPoints = profile?.points ?? 0;
     const { error } = await supabase.from("secret_comments").insert({
       secret_id: secretId,
       author_id: user.id,
@@ -298,6 +299,8 @@ function CommentsThread({
     }
     setText("");
     onPosted();
+    const fresh = await refreshProfile();
+    awardToast(prevPoints, fresh?.points, t("pointsEarned"));
   };
 
   const toggleC = async (cid: string) => {
