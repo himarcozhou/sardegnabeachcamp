@@ -141,6 +141,15 @@ export default function AdminPanel() {
                 className="w-20 h-8"
               />
               <Button size="sm" onClick={() => savePoints(u.id)}>{t("save")}</Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => deleteUser(u.id, `${u.name} ${u.surname}`)}
+                className="text-destructive shrink-0 h-8 w-8"
+                aria-label={t("deleteUser")}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
             </div>
           ))}
         </div>
