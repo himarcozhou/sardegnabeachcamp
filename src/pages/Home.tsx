@@ -74,10 +74,9 @@ export default function Home() {
       </section>
 
       {/* Stats */}
-      <section className="grid grid-cols-3 gap-3">
+      <section className="grid grid-cols-2 gap-3">
         <StatCard icon={<Users className="h-5 w-5" />} label={t("participants")} value={participants} />
         <StatCard icon={<MessageSquareLock className="h-5 w-5" />} label={t("secretsCount")} value={secretsCount} />
-        <StatCard icon={<Trophy className="h-5 w-5" />} label={t("yourPoints")} value={profile?.points ?? 0} />
       </section>
 
       {/* Announcements */}
