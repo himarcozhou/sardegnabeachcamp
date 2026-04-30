@@ -74,17 +74,33 @@ export default function Profile() {
   };
 
   const claimAdmin = async () => {
-    const { data, error } = await supabase.functions.invoke("claim-admin", {
-      body: { password: adminPwd },
-    });
-    if (error || (data as any)?.error) {
-      toast.error((data as any)?.error || error?.message || "Invalid");
-      return;
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData?.session?.access_token;
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/claim-admin`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+          },
+          body: JSON.stringify({ password: adminPwd }),
+        }
+      );
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data?.error) {
+        toast.error(data?.error || t("enterAdminPassword"));
+        return;
+      }
+      toast.success(t("youAreAdmin"));
+      setAdminPwd("");
+      setAdminOpen(false);
+      refreshProfile();
+    } catch (e: any) {
+      toast.error(e?.message || "Error");
     }
-    toast.success(t("youAreAdmin"));
-    setAdminPwd("");
-    setAdminOpen(false);
-    refreshProfile();
   };
 
   const exitAdmin = async () => {
