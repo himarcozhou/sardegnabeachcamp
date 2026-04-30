@@ -48,6 +48,7 @@ export default function Profile() {
   const save = async () => {
     setSaving(true);
     const cleanedIg = ig.trim().replace(/^@/, "").slice(0, 30) || null;
+    const prevPoints = profile?.points ?? 0;
     const { error } = await supabase.from("profiles").update({
       name: name.trim().slice(0, 40),
       surname: surname.trim().slice(0, 40),
@@ -57,7 +58,8 @@ export default function Profile() {
     if (error) { toast.error(error.message); return; }
     toast.success(t("profileSaved"));
     setEditing(false);
-    refreshProfile();
+    const fresh = await refreshProfile();
+    awardToast(prevPoints, fresh?.points, t("pointsEarned"));
   };
 
   const onFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
