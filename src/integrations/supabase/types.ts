@@ -184,6 +184,92 @@ export type Database = {
         }
         Relationships: []
       }
+      ride_posts: {
+        Row: {
+          created_at: string
+          destination: string
+          driver_id: string
+          id: string
+          is_open: boolean
+          notes: string | null
+          origin: string
+          ride_date: string
+          ride_time: string
+          slots: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          destination?: string
+          driver_id: string
+          id?: string
+          is_open?: boolean
+          notes?: string | null
+          origin?: string
+          ride_date: string
+          ride_time: string
+          slots: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          destination?: string
+          driver_id?: string
+          id?: string
+          is_open?: boolean
+          notes?: string | null
+          origin?: string
+          ride_date?: string
+          ride_time?: string
+          slots?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ride_requests: {
+        Row: {
+          created_at: string
+          driver_note: string | null
+          id: string
+          luggage: string
+          requester_id: string
+          ride_post_id: string
+          seats: number
+          status: Database["public"]["Enums"]["ride_request_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          driver_note?: string | null
+          id?: string
+          luggage: string
+          requester_id: string
+          ride_post_id: string
+          seats: number
+          status?: Database["public"]["Enums"]["ride_request_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          driver_note?: string | null
+          id?: string
+          luggage?: string
+          requester_id?: string
+          ride_post_id?: string
+          seats?: number
+          status?: Database["public"]["Enums"]["ride_request_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ride_requests_ride_post_id_fkey"
+            columns: ["ride_post_id"]
+            isOneToOne: false
+            referencedRelation: "ride_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       secret_comments: {
         Row: {
           author_id: string
@@ -416,6 +502,41 @@ export type Database = {
           likes_count: number
         }[]
       }
+      get_ride_posts_with_driver: {
+        Args: never
+        Returns: {
+          accepted_seats: number
+          created_at: string
+          destination: string
+          driver_avatar: string
+          driver_id: string
+          driver_name: string
+          driver_surname: string
+          id: string
+          is_open: boolean
+          notes: string
+          origin: string
+          ride_date: string
+          ride_time: string
+          slots: number
+        }[]
+      }
+      get_ride_requests_for_post: {
+        Args: { _post_id: string }
+        Returns: {
+          created_at: string
+          driver_note: string
+          id: string
+          luggage: string
+          requester_avatar: string
+          requester_id: string
+          requester_name: string
+          requester_surname: string
+          ride_post_id: string
+          seats: number
+          status: Database["public"]["Enums"]["ride_request_status"]
+        }[]
+      }
       guess_lie: {
         Args: { _guessed_index: number; _target_id: string }
         Returns: Json
@@ -430,6 +551,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      ride_request_status: "pending" | "accepted" | "rejected" | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -558,6 +680,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      ride_request_status: ["pending", "accepted", "rejected", "cancelled"],
     },
   },
 } as const
