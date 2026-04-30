@@ -22,7 +22,7 @@ interface AppCtx {
   profile: Profile | null;
   isAdmin: boolean;
   loading: boolean;
-  refreshProfile: () => Promise<void>;
+  refreshProfile: () => Promise<Profile | null>;
   signOut: () => Promise<void>;
 }
 
@@ -32,7 +32,7 @@ const Ctx = createContext<AppCtx>({
   profile: null,
   isAdmin: false,
   loading: true,
-  refreshProfile: async () => {},
+  refreshProfile: async () => null,
   signOut: async () => {},
 });
 
