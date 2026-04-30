@@ -145,7 +145,7 @@ export default function AdminPanel() {
               <div className="flex-1 text-sm font-medium truncate">
                 {u.name} {u.surname}
                 {u.id === user?.id && (
-                  <span className="ml-2 text-xs text-primary font-bold">(you)</span>
+                  <span className="ml-2 text-xs text-primary font-bold">({t("youLabel")})</span>
                 )}
               </div>
               <Input
