@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { awardToast } from "@/lib/utils";
 import { LogOut, Pencil, Shield, Camera, Instagram, Trophy } from "lucide-react";
 import AdminPanel from "@/components/AdminPanel";
 
