@@ -5,6 +5,7 @@ import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { LangToggle } from "@/components/LangToggle";
 import { NotificationsButton } from "@/components/NotificationsButton";
+import { APP_VERSION } from "@/lib/version";
 
 const tabs = [
   { to: "/", icon: Home, key: "home" as const },
@@ -33,7 +34,7 @@ export function Layout({ children }: { children: ReactNode }) {
 
       <main className="flex-1 max-w-2xl w-full mx-auto px-4 py-4 pb-24">
         {children}
-        <div className="text-center text-xs text-muted-foreground/70 font-medium mt-8">ver 1.1</div>
+        <div className="text-center text-xs text-muted-foreground/70 font-medium mt-8">ver {APP_VERSION}</div>
       </main>
 
       <nav

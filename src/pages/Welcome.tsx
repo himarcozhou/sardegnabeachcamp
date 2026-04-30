@@ -5,6 +5,7 @@ import { useT } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { LangToggle } from "@/components/LangToggle";
 import { cn } from "@/lib/utils";
+import { APP_VERSION } from "@/lib/version";
 import welcome1 from "@/assets/welcome-1.jpg";
 import welcome2 from "@/assets/welcome-2.jpg";
 import welcome3 from "@/assets/welcome-3.jpg";
@@ -157,7 +158,7 @@ export default function Welcome() {
           ))}
         </div>
 
-        <div className="text-center text-xs text-muted-foreground/70 font-medium">ver 1.1</div>
+        <div className="text-center text-xs text-muted-foreground/70 font-medium">ver {APP_VERSION}</div>
       </div>
     </div>
   );
