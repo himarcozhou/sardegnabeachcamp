@@ -19,11 +19,15 @@ const factSchema = z.object({
   is_lie: z.boolean(),
 });
 
-const accountSchema = z.object({
-  name: z.string().trim().min(1).max(40),
-  surname: z.string().trim().max(40).optional(),
-  password: z.string().min(4),
-});
+const makeAccountSchema = (msgs: { tooShort: string; needsNumber: string }) =>
+  z.object({
+    name: z.string().trim().min(1).max(40),
+    surname: z.string().trim().max(40).optional(),
+    password: z
+      .string()
+      .min(6, msgs.tooShort)
+      .regex(/\d/, msgs.needsNumber),
+  });
 
 function makeEmail(name: string, surname: string) {
   const base = surname ? `${name}.${surname}` : name;
@@ -101,7 +105,11 @@ export default function Onboarding() {
 
   // Step 0: create account (or update existing profile)
   const submitStep0 = async () => {
-    const parsed = accountSchema.safeParse({ name, surname, password: user ? "xxxx" : password });
+    const accountSchema = makeAccountSchema({
+      tooShort: t("passwordTooShort"),
+      needsNumber: t("passwordNeedsNumber"),
+    });
+    const parsed = accountSchema.safeParse({ name, surname, password: user ? "xxxxx1" : password });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
       return;
@@ -323,10 +331,10 @@ export default function Onboarding() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  minLength={4}
+                  minLength={6}
                   autoComplete="new-password"
                   required
-                  placeholder={lang === "it" ? "Min. 4 caratteri" : "Min. 4 chars"}
+                  placeholder={t("passwordHint")}
                 />
               </div>
             )}
