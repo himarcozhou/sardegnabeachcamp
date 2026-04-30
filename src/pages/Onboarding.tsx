@@ -157,11 +157,13 @@ export default function Onboarding() {
           })
           .eq("id", newUserId);
 
-        await refreshProfile();
+        const fresh = await refreshProfile();
+        awardToast(0, fresh?.points, t("pointsEarned"));
         toast.success(t("accountCreated"));
         setStep(1);
       } else {
         // Existing logged-in user resuming onboarding
+        const prevPoints = profile?.points ?? 0;
         const avatarUrl = await uploadAvatar(user.id);
         const { error } = await supabase
           .from("profiles")
@@ -177,7 +179,8 @@ export default function Onboarding() {
           setSaving(false);
           return;
         }
-        await refreshProfile();
+        const fresh = await refreshProfile();
+        awardToast(prevPoints, fresh?.points, t("pointsEarned"));
         setStep(1);
       }
     } finally {
