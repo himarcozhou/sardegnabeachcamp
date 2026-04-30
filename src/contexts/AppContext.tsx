@@ -60,7 +60,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (stored === "1") document.documentElement.classList.add("dark");
   }, []);
 
-  const loadProfileAndRole = useCallback(async (userId: string) => {
+  const loadProfileAndRole = useCallback(async (userId: string): Promise<Profile | null> => {
     const [{ data: prof }, { data: roles }] = await Promise.all([
       supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
       supabase.from("user_roles").select("role").eq("user_id", userId),
@@ -84,11 +84,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setProfile(null);
     }
     setIsAdmin(!!roles?.some((r) => r.role === "admin"));
+    return (prof as Profile | null) ?? null;
   }, [langInitializedFromProfile]);
 
-  const refreshProfile = useCallback(async () => {
-    if (!session?.user) return;
-    await loadProfileAndRole(session.user.id);
+  const refreshProfile = useCallback(async (): Promise<Profile | null> => {
+    if (!session?.user) return null;
+    return await loadProfileAndRole(session.user.id);
   }, [session, loadProfileAndRole]);
 
   useEffect(() => {
