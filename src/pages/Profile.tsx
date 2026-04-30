@@ -276,6 +276,35 @@ export default function Profile() {
               <Label>{t("instagram")}</Label>
               <Input value={ig} onChange={(e) => setIg(e.target.value)} maxLength={30} />
             </div>
+            <div className="space-y-2 pt-2 border-t border-border">
+              <Label className="text-sm font-bold">{t("editFacts")}</Label>
+              <p className="text-xs text-muted-foreground">{t("threeFactsHelp")}</p>
+              {facts.map((f, i) => (
+                <div key={i} className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <Input
+                      value={f.text}
+                      onChange={(e) => {
+                        const next = [...facts];
+                        next[i] = { ...next[i], text: e.target.value };
+                        setFacts(next);
+                      }}
+                      placeholder={`${t("fact")} ${i + 1}`}
+                      maxLength={200}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setLieIdx(i)}
+                      className={`shrink-0 px-2 py-1 rounded-lg text-xs font-bold border ${
+                        lieIdx === i ? "bg-accent text-accent-foreground border-accent" : "bg-muted text-muted-foreground border-border"
+                      }`}
+                    >
+                      🤥
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
             <Button onClick={save} disabled={saving} className="w-full gradient-festive text-white border-0 rounded-xl font-bold">
               {saving ? t("loading") : t("saveProfile")}
             </Button>
