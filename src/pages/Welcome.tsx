@@ -104,10 +104,7 @@ export default function Welcome() {
           style={{ transform: `translateX(-${step * 100}%)` }}
         >
           {slides.map((s, i) => (
-            <div
-              key={i}
-              className="min-w-full h-full flex flex-col items-center px-8 pt-6"
-            >
+            <div key={i} className="min-w-full h-full flex flex-col items-center px-8 pt-6">
               <div className="w-full max-w-sm flex-1 flex items-center justify-center">
                 <img
                   src={s.image}
@@ -120,12 +117,8 @@ export default function Welcome() {
               </div>
 
               <div className="w-full max-w-sm text-center mt-6 mb-2">
-                <h1 className="text-3xl font-extrabold mb-3 text-foreground">
-                  {s.title}
-                </h1>
-                <p className="text-base text-muted-foreground leading-relaxed">
-                  {s.desc}
-                </p>
+                <h1 className="text-3xl font-extrabold mb-3 text-foreground">{s.title}</h1>
+                <p className="text-base text-muted-foreground leading-relaxed">{s.desc}</p>
               </div>
             </div>
           ))}
@@ -133,10 +126,7 @@ export default function Welcome() {
       </div>
 
       {/* Footer */}
-      <div
-        className="px-8 pt-4 space-y-8"
-        style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 3.5rem)" }}
-      >
+      <div className="px-8 pt-4 space-y-8" style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 3.5rem)" }}>
         <div className="flex items-center justify-between gap-4">
           <button
             onClick={finish}
@@ -144,19 +134,14 @@ export default function Welcome() {
           >
             {lang === "it" ? "Salta" : "Skip"}
           </button>
-          <span
-            className="text-sm font-semibold text-muted-foreground tabular-nums"
-            aria-live="polite"
-          >
+          <span className="text-sm font-semibold text-muted-foreground tabular-nums" aria-live="polite">
             {step + 1}/{slides.length}
           </span>
           <Button
             onClick={next}
             className="gradient-festive text-white border-0 hover:opacity-90 h-12 px-7 rounded-xl font-bold shadow-soft"
           >
-            {step < slides.length - 1
-              ? lang === "it" ? "Avanti" : "Next"
-              : lang === "it" ? "Inizia" : "Start"}
+            {step < slides.length - 1 ? (lang === "it" ? "Avanti" : "Next") : lang === "it" ? "Inizia" : "Start"}
             <ChevronRight className="h-4 w-4 ml-1" />
           </Button>
         </div>
@@ -167,17 +152,12 @@ export default function Welcome() {
               key={i}
               onClick={() => setStep(i)}
               aria-label={`Slide ${i + 1}`}
-              className={cn(
-                "h-2.5 rounded-full transition-all",
-                i === step ? "w-10 bg-primary" : "w-2.5 bg-muted"
-              )}
+              className={cn("h-2.5 rounded-full transition-all", i === step ? "w-10 bg-primary" : "w-2.5 bg-muted")}
             />
           ))}
         </div>
 
-        <div className="text-center text-xs text-muted-foreground/70 font-medium">
-          ver 1.0
-        </div>
+        <div className="text-center text-xs text-muted-foreground/70 font-medium">ver 1.1</div>
       </div>
     </div>
   );
