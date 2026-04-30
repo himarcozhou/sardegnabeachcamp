@@ -1,90 +1,96 @@
-## Goal
+# Passaggi — remove accepted passengers + re-request flow
 
-Today, users can only install the app when the browser fires the auto `beforeinstallprompt` popup (and once dismissed, it never returns). We want a **permanent way to install the app** at any time.
+## What changes
 
-## Key behaviors (apply to all options)
+### 1. Driver can remove an accepted passenger
+In the **Manage requests** dialog (`ManageDialog`), each accepted passenger row will get a small **"Remove"** button (Trash icon, destructive style) next to their status badge.
 
-- Capture the `beforeinstallprompt` event globally and store it (instead of consuming it once in the popup).
-- Detect when the app is already installed (`display-mode: standalone` or `navigator.standalone` on iOS) → hide the install entry point completely.
-- On iOS Safari (no `beforeinstallprompt` support), the button opens a small modal with step-by-step instructions: "Tap Share → Add to Home Screen", with a screenshot/icon hint.
-- Fully translated (IT/EN) via `i18n.ts`.
-- The auto popup (`InstallPrompt.tsx`) stays as-is for first-time users, but the new entry point is always available even after dismissal.
+Clicking it:
+- Asks for confirmation ("Remove this passenger? They'll be notified and can request again.")
+- Sets the request `status` from `accepted` → `cancelled` (also adds an optional short reason field — skipped for now to keep UX simple)
+- The seat count automatically frees up (the `accepted_seats` aggregation in `get_ride_posts_with_driver` only counts `accepted`)
+- Triggers a push + in-app notification to the passenger
 
-## UI/UX options
+### 2. Notification to the removed passenger
+Extend the existing `notify_on_ride_request_status` trigger so that when status changes to `cancelled` **by the driver** (not the requester themselves), it sends:
+- Title: "Sei stato rimosso dal passaggio" / "You've been removed from a ride"
+- Body: "Il guidatore ha annullato il tuo posto su {origin} → {destination}. Puoi richiederlo di nuovo."
 
-Pick one (or combine A + C, which is my recommendation).
+To distinguish "driver removed me" from "I cancelled my own request", the trigger checks whether `auth.uid() = requester_id`. If yes → no notification. If no (driver or admin did it) → send the notification.
 
-### Option A — Install button in the Profile page ⭐ recommended
+### 3. Removed passenger can re-request
+Today there is a unique constraint `(ride_post_id, requester_id)` on `ride_requests` which blocks a second request (the `23505` error path in `RequestDialog`). Two options:
 
-Add a clean row in the Profile page (near Language / Dark mode), e.g.:
+- **Option A (chosen):** Drop the unique constraint and instead, when the user opens the ride card and already has a `cancelled` or `rejected` request, the UI shows the "Ask for ride" button again (instead of the status badge). Submitting **updates** the existing row back to `pending` with the new seats/luggage, instead of inserting a new one.
+- This keeps history clean (one row per user per ride) and avoids duplicates.
 
-```text
-┌────────────────────────────────────────────┐
-│ 📲  Install app              [ Install ]   │
-│     Add to home screen for faster access   │
-└────────────────────────────────────────────┘
-```
+UI logic in `Passaggi.tsx`:
+- If `myReq` exists AND `myReq.status` is `cancelled` or `rejected` → show **"Ask for ride again"** button instead of the status badge.
+- The submit handler in `RequestDialog` already supports update mode via `editingRequest`; we'll pass the cancelled/rejected request as `editingRequest` and additionally reset its status to `pending` on save.
 
-- Pros: discoverable, fits existing settings pattern, doesn't add header clutter.
-- Cons: requires user to open Profile to find it.
-
-### Option B — Small download icon in the header
-
-Add a `Download` icon button next to the bell + language toggle in `Layout.tsx` header. Tapping it triggers `prompt()` (or opens the iOS instructions modal). Hidden once installed.
-
-- Pros: always visible on every page, one tap.
-- Cons: header is already dense (title + bell + lang); adding a 3rd icon may feel busy on small screens.
-
-### Option C — Banner card on the Home page
-
-A dismissible (per-session, not forever) gradient card at the top of `Home.tsx`:
-
-```text
-┌────────────────────────────────────────────┐
-│ 📲  Install BVCamp Sardegna             ✕  │
-│     Faster access, works offline           │
-│                              [ Install ]   │
-└────────────────────────────────────────────┘
-```
-
-- Pros: high visibility for new users, matches `gradient-festive` brand.
-- Cons: takes vertical space on Home; feels redundant with the auto popup.
-
-### Option D — Add to the welcome carousel (4th slide)
-
-A dedicated final slide in `Welcome.tsx` titled "Install the app" with a big install CTA before "Start".
-
-- Pros: integrated into onboarding flow.
-- Cons: only seen once; doesn't help returning users who skipped install.
-
-## My recommendation
-
-**Option A (Profile row) + Option C (Home banner, dismissible per session)**:
-- A guarantees the action is always findable in settings.
-- C maximises conversion for new/returning users without being as aggressive as the bottom popup.
-- Both auto-hide once the app is installed.
-
-If you want the lightest touch, go with **A only**.
+### 4. Clarify "Richieste aperte" label
+Rename the toggle in the edit form from "Richieste aperte / Open requests" to **"Accetta nuove richieste" / "Accept new requests"** with a small helper text below: *"Disattiva per smettere di ricevere nuove richieste senza eliminare il passaggio."*
 
 ## Technical details
 
-1. **New `useInstallPrompt` hook** (`src/hooks/useInstallPrompt.ts`):
-   - Listens to `beforeinstallprompt` once at app level, stores the event in a module-level singleton + React state so multiple components can read it.
-   - Exposes `{ canInstall, isInstalled, isIOS, promptInstall() }`.
-   - Listens to the `appinstalled` event to flip `isInstalled`.
+**Database migration:**
+```sql
+-- 1. Drop unique constraint so re-request via update is the only path,
+--    but keep an index for performance
+ALTER TABLE public.ride_requests
+  DROP CONSTRAINT IF EXISTS ride_requests_ride_post_id_requester_id_key;
 
-2. **Refactor `InstallPrompt.tsx`** to use the hook (so the auto popup and any new buttons share the same captured event).
+CREATE INDEX IF NOT EXISTS ride_requests_post_requester_idx
+  ON public.ride_requests (ride_post_id, requester_id);
 
-3. **New `InstallButton` component** with two variants: `row` (Profile) and `card` (Home banner). Renders nothing if `isInstalled`. On iOS, opens a `<Dialog>` with Share→Add to Home Screen instructions.
+-- 2. Update notify trigger to handle driver-initiated cancellation
+CREATE OR REPLACE FUNCTION public.notify_on_ride_request_status()
+RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE
+  v_origin text; v_destination text;
+  v_title text; v_body text;
+BEGIN
+  IF NEW.status = OLD.status THEN RETURN NEW; END IF;
 
-4. **i18n keys** to add: `installApp`, `installAppDesc`, `install`, `iosInstallTitle`, `iosInstallStep1`, `iosInstallStep2`, `iosInstallStep3`, `appInstalled`.
+  SELECT origin, destination INTO v_origin, v_destination
+  FROM public.ride_posts WHERE id = NEW.ride_post_id;
 
-5. **Wire-up**:
-   - Option A: insert `<InstallButton variant="row" />` in `Profile.tsx` settings section.
-   - Option C: insert `<InstallButton variant="card" />` at top of `Home.tsx`, with a `sessionStorage` dismiss key (`install_card_dismissed_session`).
+  IF NEW.status = 'accepted' THEN
+    v_title := 'Richiesta accettata ✅';
+    v_body  := 'Il tuo passaggio ' || v_origin || ' → ' || v_destination || ' è stato accettato!';
+  ELSIF NEW.status = 'rejected' THEN
+    v_title := 'Richiesta rifiutata';
+    v_body  := 'Il tuo passaggio ' || v_origin || ' → ' || v_destination || ' è stato rifiutato.';
+  ELSIF NEW.status = 'cancelled' AND auth.uid() <> NEW.requester_id THEN
+    v_title := 'Sei stato rimosso dal passaggio';
+    v_body  := 'Il guidatore ha annullato il tuo posto su ' || v_origin || ' → ' || v_destination || '. Puoi richiederlo di nuovo.';
+  ELSE
+    RETURN NEW;
+  END IF;
 
-6. No changes to `manifest.json`, `sw.js`, or version (still 1.1 — this is a UX addition, bump to 1.2 if you'd like, just say the word).
+  PERFORM public.notify_user(
+    NEW.requester_id,
+    'ride_request_' || NEW.status,
+    v_title, v_body,
+    jsonb_build_object('ride_post_id', NEW.ride_post_id, 'request_id', NEW.id, 'status', NEW.status)
+  );
+  RETURN NEW;
+END; $$;
+```
 
-## Please confirm
+**Frontend edits (`src/pages/Passaggi.tsx`):**
+- `ManageDialog`: add a Remove button for rows where `status === 'accepted'` that calls `updateStatus(r.id, 'cancelled')` (extend the union type).
+- Main list: when `myReq.status` is `cancelled` or `rejected`, render the "Ask for ride again" CTA which opens `RequestDialog` with `editingRequest = myReq`.
+- `RequestDialog`: when submitting an update for a request whose status is not `pending`, also set `status: 'pending'` in the update payload.
+- `ComposeRide`: change toggle label and add helper text.
 
-Which option(s) would you like? **A**, **B**, **C**, **D**, **A+C** (my pick), or something else?
+**i18n keys to add (`src/lib/i18n.ts`):**
+- `removePassenger` / `Rimuovi passeggero` / `Remove passenger`
+- `removePassengerConfirm` / confirmation message
+- `askAgain` / `Richiedi di nuovo` / `Ask again`
+- `acceptNewRequests` / `Accetta nuove richieste` / `Accept new requests`
+- `acceptNewRequestsHelp` / helper text
+
+## Out of scope
+- No reason field on removal (can be added later if needed).
+- No history of past statuses — we just overwrite the request row.
