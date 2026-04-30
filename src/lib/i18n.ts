@@ -132,6 +132,11 @@ export const dict = {
     closeRide: "Chiudi",
     requestExists: "Hai già richiesto un posto",
     cantRequestOwn: "Non puoi richiedere un tuo passaggio",
+    editRide: "Modifica passaggio",
+    editRequest: "Modifica richiesta",
+    saveChanges: "Salva modifiche",
+    slotsBelowAcceptedError: "I posti non possono essere inferiori a quelli già accettati",
+    edit: "Modifica",
   },
   en: {
     appName: "Party Hub",
@@ -262,6 +267,11 @@ export const dict = {
     closeRide: "Close",
     requestExists: "You already requested a seat",
     cantRequestOwn: "You can't request your own ride",
+    editRide: "Edit ride",
+    editRequest: "Edit request",
+    saveChanges: "Save changes",
+    slotsBelowAcceptedError: "Slots cannot be lower than already accepted seats",
+    edit: "Edit",
   },
 } as const;
 

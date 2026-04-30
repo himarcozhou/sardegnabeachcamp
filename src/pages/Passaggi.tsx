@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { toast } from "sonner";
 import {
   Plus, X, Car, Calendar, Clock, Users as UsersIcon, ArrowRight,
-  Check, MapPin, Trash2, Luggage,
+  Check, MapPin, Trash2, Luggage, Pencil,
 } from "lucide-react";
 import { z } from "zod";
 
@@ -64,7 +64,9 @@ export default function Passaggi() {
   const [posts, setPosts] = useState<RidePost[]>([]);
   const [myRequests, setMyRequests] = useState<Record<string, RideRequest>>({});
   const [composing, setComposing] = useState(false);
+  const [editingPost, setEditingPost] = useState<RidePost | null>(null);
   const [openRequestFor, setOpenRequestFor] = useState<RidePost | null>(null);
+  const [editingRequest, setEditingRequest] = useState<RideRequest | null>(null);
   const [openManageFor, setOpenManageFor] = useState<RidePost | null>(null);
 
   const load = useCallback(async () => {
@@ -122,18 +124,27 @@ export default function Passaggi() {
                 </div>
               </div>
               {isOwner && (
-                <button
-                  onClick={async () => {
-                    if (!confirm(lang === "it" ? "Eliminare?" : "Delete?")) return;
-                    const { error } = await supabase.from("ride_posts").delete().eq("id", p.id);
-                    if (error) toast.error(error.message);
-                    else load();
-                  }}
-                  className="text-destructive"
-                  aria-label="Delete"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setEditingPost(p)}
+                    className="text-muted-foreground hover:text-foreground"
+                    aria-label="Edit"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={async () => {
+                      if (!confirm(lang === "it" ? "Eliminare?" : "Delete?")) return;
+                      const { error } = await supabase.from("ride_posts").delete().eq("id", p.id);
+                      if (error) toast.error(error.message);
+                      else load();
+                    }}
+                    className="text-destructive"
+                    aria-label="Delete"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
               )}
             </div>
 
@@ -175,15 +186,28 @@ export default function Passaggi() {
                   {t("pendingRequests")}
                 </Button>
               ) : myReq ? (
-                <div className={`flex-1 text-sm font-bold rounded-full px-4 py-2 text-center
-                  ${myReq.status === "accepted" ? "bg-accent/20 text-accent" : ""}
-                  ${myReq.status === "pending" ? "bg-muted text-muted-foreground" : ""}
-                  ${myReq.status === "rejected" ? "bg-destructive/15 text-destructive" : ""}
-                `}>
-                  {myReq.status === "accepted" && t("statusAccepted")}
-                  {myReq.status === "pending" && t("statusPending")}
-                  {myReq.status === "rejected" && t("statusRejected")}
-                  {myReq.status === "cancelled" && (lang === "it" ? "Annullata" : "Cancelled")}
+                <div className="flex-1 flex flex-col gap-1">
+                  <div className={`text-sm font-bold rounded-full px-4 py-2 text-center
+                    ${myReq.status === "accepted" ? "bg-accent/20 text-accent" : ""}
+                    ${myReq.status === "pending" ? "bg-muted text-muted-foreground" : ""}
+                    ${myReq.status === "rejected" ? "bg-destructive/15 text-destructive" : ""}
+                  `}>
+                    {myReq.status === "accepted" && t("statusAccepted")}
+                    {myReq.status === "pending" && t("statusPending")}
+                    {myReq.status === "rejected" && t("statusRejected")}
+                    {myReq.status === "cancelled" && (lang === "it" ? "Annullata" : "Cancelled")}
+                  </div>
+                  {myReq.status === "pending" && (
+                    <button
+                      onClick={() => {
+                        setOpenRequestFor(p);
+                        setEditingRequest(myReq);
+                      }}
+                      className="text-[10px] text-center text-muted-foreground hover:text-foreground font-semibold"
+                    >
+                      {t("edit")}
+                    </button>
+                  )}
                 </div>
               ) : (
                 <Button
@@ -210,11 +234,16 @@ export default function Passaggi() {
         </button>
       )}
 
-      {composing && (
+      {(composing || editingPost) && (
         <ComposeRide
-          onClose={() => setComposing(false)}
-          onCreated={() => {
+          editingPost={editingPost}
+          onClose={() => {
             setComposing(false);
+            setEditingPost(null);
+          }}
+          onDone={() => {
+            setComposing(false);
+            setEditingPost(null);
             load();
           }}
         />
@@ -222,9 +251,14 @@ export default function Passaggi() {
 
       <RequestDialog
         post={openRequestFor}
-        onClose={() => setOpenRequestFor(null)}
+        editingRequest={editingRequest}
+        onClose={() => {
+          setOpenRequestFor(null);
+          setEditingRequest(null);
+        }}
         onSent={() => {
           setOpenRequestFor(null);
+          setEditingRequest(null);
           load();
         }}
       />
@@ -238,15 +272,24 @@ export default function Passaggi() {
   );
 }
 
-function ComposeRide({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
+function ComposeRide({ 
+  onClose, 
+  onDone, 
+  editingPost 
+}: { 
+  onClose: () => void; 
+  onDone: () => void;
+  editingPost: RidePost | null;
+}) {
   const { t, lang } = useT();
   const { user } = useApp();
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-  const [slots, setSlots] = useState(3);
-  const [notes, setNotes] = useState("");
-  const [origin, setOrigin] = useState("Resort");
-  const [destination, setDestination] = useState("Aeroporto Cagliari");
+  const [date, setDate] = useState(editingPost?.ride_date || "");
+  const [time, setTime] = useState(editingPost?.ride_time || "");
+  const [slots, setSlots] = useState(editingPost?.slots || 3);
+  const [notes, setNotes] = useState(editingPost?.notes || "");
+  const [origin, setOrigin] = useState(editingPost?.origin || "Resort");
+  const [destination, setDestination] = useState(editingPost?.destination || "Aeroporto Cagliari");
+  const [isOpen, setIsOpen] = useState(editingPost?.is_open ?? true);
   const [saving, setSaving] = useState(false);
 
   const submit = async () => {
@@ -256,8 +299,14 @@ function ComposeRide({ onClose, onCreated }: { onClose: () => void; onCreated: (
       toast.error(t("requiredField"));
       return;
     }
+
+    if (editingPost && slots < editingPost.accepted_seats) {
+      toast.error(t("slotsBelowAcceptedError"));
+      return;
+    }
+
     setSaving(true);
-    const { error } = await supabase.from("ride_posts").insert({
+    const data = {
       driver_id: user.id,
       ride_date: date,
       ride_time: time,
@@ -265,21 +314,27 @@ function ComposeRide({ onClose, onCreated }: { onClose: () => void; onCreated: (
       notes: notes.trim() || null,
       origin: origin.trim() || "Resort",
       destination: destination.trim() || "Aeroporto Cagliari",
-    });
+      is_open: isOpen,
+    };
+
+    const { error } = editingPost 
+      ? await supabase.from("ride_posts").update(data).eq("id", editingPost.id)
+      : await supabase.from("ride_posts").insert(data);
+
     setSaving(false);
     if (error) {
       toast.error(error.message);
       return;
     }
-    toast.success(t("rideCreated"));
-    onCreated();
+    toast.success(editingPost ? t("success") : t("rideCreated"));
+    onDone();
   };
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 flex items-end sm:items-center justify-center p-4 animate-fade-in">
       <div className="w-full max-w-md bg-card text-card-foreground border border-border rounded-3xl p-5 shadow-glow animate-slide-up max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="font-bold">{t("postRide")}</h3>
+          <h3 className="font-bold">{editingPost ? t("editRide") : t("postRide")}</h3>
           <button onClick={onClose} aria-label="Close" className="text-muted-foreground hover:text-foreground transition-smooth">
             <X className="h-5 w-5" />
           </button>
@@ -326,12 +381,23 @@ function ComposeRide({ onClose, onCreated }: { onClose: () => void; onCreated: (
               placeholder={lang === "it" ? "Es. partenza puntuale, bagagliaio piccolo..." : "E.g. on time, small trunk..."}
             />
           </div>
+          {editingPost && (
+            <div className="flex items-center justify-between py-2">
+              <Label className="cursor-pointer">{lang === "it" ? "Richieste aperte" : "Open requests"}</Label>
+              <input 
+                type="checkbox" 
+                checked={isOpen} 
+                onChange={(e) => setIsOpen(e.target.checked)}
+                className="w-5 h-5 accent-primary"
+              />
+            </div>
+          )}
           <Button
             onClick={submit}
             disabled={saving}
             className="w-full gradient-festive text-white border-0 rounded-xl font-bold"
           >
-            {saving ? t("loading") : t("post")}
+            {saving ? t("loading") : editingPost ? t("saveChanges") : t("post")}
           </Button>
         </div>
       </div>
@@ -341,25 +407,27 @@ function ComposeRide({ onClose, onCreated }: { onClose: () => void; onCreated: (
 
 function RequestDialog({
   post,
+  editingRequest,
   onClose,
   onSent,
 }: {
   post: RidePost | null;
+  editingRequest: RideRequest | null;
   onClose: () => void;
   onSent: () => void;
 }) {
   const { t, lang } = useT();
   const { user } = useApp();
-  const [seats, setSeats] = useState(1);
-  const [luggage, setLuggage] = useState("");
+  const [seats, setSeats] = useState(editingRequest?.seats || 1);
+  const [luggage, setLuggage] = useState(editingRequest?.luggage || "");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (post) {
-      setSeats(1);
-      setLuggage("");
+      setSeats(editingRequest?.seats || 1);
+      setLuggage(editingRequest?.luggage || "");
     }
-  }, [post]);
+  }, [post, editingRequest]);
 
   const submit = async () => {
     if (!post || !user) return;
@@ -373,19 +441,23 @@ function RequestDialog({
       return;
     }
     setSaving(true);
-    const { error } = await supabase.from("ride_requests").insert({
+    const data = {
       ride_post_id: post.id,
       requester_id: user.id,
       seats,
       luggage: luggage.trim(),
-    });
+    };
+
+    const { error } = editingRequest
+      ? await supabase.from("ride_requests").update({ seats, luggage: luggage.trim() }).eq("id", editingRequest.id)
+      : await supabase.from("ride_requests").insert(data);
     setSaving(false);
     if (error) {
-      if (error.code === "23505") toast.error(t("requestExists"));
+      if (error.code === "23505" && !editingRequest) toast.error(t("requestExists"));
       else toast.error(error.message);
       return;
     }
-    toast.success(t("requestSent"));
+    toast.success(editingRequest ? t("success") : t("requestSent"));
     onSent();
   };
 
@@ -393,7 +465,7 @@ function RequestDialog({
     <Dialog open={!!post} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="rounded-3xl">
         <DialogHeader>
-          <DialogTitle>{t("askForRide")}</DialogTitle>
+          <DialogTitle>{editingRequest ? t("editRequest") : t("askForRide")}</DialogTitle>
         </DialogHeader>
         {post && (
           <div className="space-y-3">
@@ -431,7 +503,7 @@ function RequestDialog({
               disabled={saving}
               className="w-full gradient-festive text-white border-0 rounded-xl font-bold"
             >
-              {saving ? t("loading") : t("sendRequest")}
+              {saving ? t("loading") : editingRequest ? t("saveChanges") : t("sendRequest")}
             </Button>
           </div>
         )}
