@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { awardToast } from "@/lib/utils";
 import { LogOut, Pencil, Shield, Camera, Instagram, Trophy } from "lucide-react";
 import AdminPanel from "@/components/AdminPanel";
 
@@ -47,6 +48,7 @@ export default function Profile() {
   const save = async () => {
     setSaving(true);
     const cleanedIg = ig.trim().replace(/^@/, "").slice(0, 30) || null;
+    const prevPoints = profile?.points ?? 0;
     const { error } = await supabase.from("profiles").update({
       name: name.trim().slice(0, 40),
       surname: surname.trim().slice(0, 40),
@@ -56,7 +58,8 @@ export default function Profile() {
     if (error) { toast.error(error.message); return; }
     toast.success(t("profileSaved"));
     setEditing(false);
-    refreshProfile();
+    const fresh = await refreshProfile();
+    awardToast(prevPoints, fresh?.points, t("pointsEarned"));
   };
 
   const onFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,9 +71,11 @@ export default function Profile() {
     const { error: upErr } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
     if (upErr) { toast.error(upErr.message); return; }
     const { data } = supabase.storage.from("avatars").getPublicUrl(path);
+    const prevPoints = profile?.points ?? 0;
     await supabase.from("profiles").update({ avatar_url: data.publicUrl }).eq("id", user.id);
     toast.success(t("profileSaved"));
-    refreshProfile();
+    const fresh = await refreshProfile();
+    awardToast(prevPoints, fresh?.points, t("pointsEarned"));
   };
 
   const claimAdmin = async () => {

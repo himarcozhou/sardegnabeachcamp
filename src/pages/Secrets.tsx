@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Avatar } from "@/components/Avatar";
 import { toast } from "sonner";
+import { awardToast } from "@/lib/utils";
 import { Heart, MessageCircle, Plus, Send, X, EyeOff, Eye, Trash2, User as UserIcon } from "lucide-react";
 import { z } from "zod";
 
@@ -33,7 +34,7 @@ const commentSchema = z.string().trim().min(1).max(500);
 
 export default function Secrets() {
   const { t } = useT();
-  const { user, isAdmin } = useApp();
+  const { user, isAdmin, profile, refreshProfile } = useApp();
   const [items, setItems] = useState<PublicSecret[]>([]);
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
   const [composing, setComposing] = useState(false);
@@ -101,6 +102,7 @@ export default function Secrets() {
       toast.error(t("requiredField"));
       return;
     }
+    const prevPoints = profile?.points ?? 0;
     const { error } = await supabase.from("secrets").insert({ author_id: user.id, content: parsed.data });
     if (error) {
       toast.error(error.message);
@@ -109,6 +111,8 @@ export default function Secrets() {
     setNewContent("");
     setComposing(false);
     toast.success(t("secretPosted"));
+    const fresh = await refreshProfile();
+    awardToast(prevPoints, fresh?.points, t("pointsEarned"));
   };
 
   const toggleLike = async (id: string) => {
@@ -263,7 +267,7 @@ function CommentsThread({
   onPosted: () => void;
 }) {
   const { t } = useT();
-  const { user } = useApp();
+  const { user, profile, refreshProfile } = useApp();
   const [text, setText] = useState("");
   const [likedC, setLikedC] = useState<Set<string>>(new Set());
 
@@ -283,6 +287,7 @@ function CommentsThread({
     if (!user) return;
     const parsed = commentSchema.safeParse(text);
     if (!parsed.success) return;
+    const prevPoints = profile?.points ?? 0;
     const { error } = await supabase.from("secret_comments").insert({
       secret_id: secretId,
       author_id: user.id,
@@ -294,6 +299,8 @@ function CommentsThread({
     }
     setText("");
     onPosted();
+    const fresh = await refreshProfile();
+    awardToast(prevPoints, fresh?.points, t("pointsEarned"));
   };
 
   const toggleC = async (cid: string) => {

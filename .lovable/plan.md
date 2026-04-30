@@ -1,57 +1,69 @@
-## Goal
+## Goals
 
-Fix visual issues in dark mode for the **Pubblica Passaggio** dialog (and similar custom overlays) so all text, inputs, and surfaces render with proper contrast.
+1. Declutter the homepage — show your points in only one place.
+2. Show a toast (e.g. "+2 points 🎉") for every action that earns points, not just guessing the lie.
+3. Fix stale "Your points" UI by refreshing the profile after point-earning actions, so it updates as quickly as the leaderboard.
 
-## Findings
+---
 
-The codebase mostly uses semantic tokens (good). The issues are concentrated in custom-built overlays (not shadcn `Dialog`):
+## 1. Homepage cleanup (`src/pages/Home.tsx`)
 
-1. **`src/pages/Passaggi.tsx` → `ComposeRide`** (lines ~270–340): custom overlay using `bg-card`. In dark mode:
-   - Native HTML `<input type="date">` and `<input type="time">` inherit browser styling — the calendar/clock icon is black on dark background, nearly invisible.
-   - Border on the modal blends into the dark backdrop (no visible edge).
-   - No explicit `text-foreground` / `border-border` on the container, so contrast can be inconsistent.
+Currently your points appear in 3 places: a stat card, a big gradient strip, and a highlighted row in the leaderboard.
 
-2. **`src/pages/Secrets.tsx`** (line 228): same custom overlay pattern — same date/time concerns where applicable.
+- **Keep**: the big gradient "Your points" strip above the leaderboard (most visible, on-brand).
+- **Remove**: the "Your points" stat card from the 3-card stats grid.
+- **Remove**: the highlighted-row treatment in the leaderboard list (your row will look like everyone else's).
 
-3. **`src/pages/Profile.tsx` line 131**: hardcoded `bg-white text-primary` on the avatar edit badge — stays white in dark mode (acceptable but inconsistent with theme; should use `bg-card text-foreground` or keep but ensure ring contrast).
+The stats grid becomes 2 cards (Participants + Secrets), centered on a 2-column grid.
 
-4. Native date/time pickers globally need a dark-mode `color-scheme: dark` hint so the browser renders the picker UI in dark.
+---
 
-## Changes
+## 2. Toasts for every point-earning action
 
-### `src/index.css`
-- Add a `color-scheme` declaration so native inputs (date, time, scrollbars) follow theme:
-  ```css
-  :root { color-scheme: light; }
-  .dark { color-scheme: dark; }
-  ```
-- Optionally add a small utility to invert the date/time picker indicator icon in dark mode:
-  ```css
-  .dark input[type="date"]::-webkit-calendar-picker-indicator,
-  .dark input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(1); }
-  ```
+Today only `guess_lie` shows a toast. Points are also granted by:
 
-### `src/pages/Passaggi.tsx` (ComposeRide modal)
-- Add `text-foreground border border-border` to the modal panel for explicit contrast and a visible edge:
-  ```tsx
-  <div className="w-full max-w-md bg-card text-foreground border border-border rounded-3xl ...">
-  ```
-- Ensure the close button has `text-muted-foreground hover:text-foreground`.
 
-### `src/pages/Secrets.tsx` (compose modal)
-- Apply the same `text-foreground border border-border` treatment to the panel for consistency.
+| Action                     | Where                                                                 | Points         |
+| -------------------------- | --------------------------------------------------------------------- | -------------- |
+| Guess the lie correctly    | `People.tsx` (already toasted)                                        | +2             |
+| Post a secret              | `Secrets.tsx` (DB trigger `points_on_secret`)                         | +1             |
+| Post a comment on a secret | `Secrets.tsx` (DB trigger `points_on_comment`)                        | +1             |
+| Complete the 3 facts       | `Profile.tsx` / `Onboarding.tsx` (trigger `points_on_profile_update`) | +5 (one-time)  |
+| Add an avatar              | same                                                                  | +10 (one-time) |
+| Add Instagram tag          | same                                                                  | +10 (one-time) |
 
-### `src/pages/Profile.tsx`
-- Change the avatar edit badge from `bg-white text-primary` to `bg-card text-foreground border border-border` so it adapts to dark mode.
 
-## Out of scope
+Approach: after each successful action above, call `refreshProfile()` and **diff** the new `profile.points` against the previous value. If it increased, show `toast.success("+N punti 🎉")`. This works perfectly for DB-trigger-granted points because we don't have to know the rules client-side — we just observe the delta.
 
-- shadcn `Dialog`, `Sheet`, `Drawer`, `AlertDialog` — already token-based and dark-friendly.
-- Gradient buttons (`gradient-festive text-white`) — intentional and look correct in both themes.
+A small helper `awardToast(prevPoints, newPoints)` will be added (in `src/lib/utils.ts` or inline) and used in the relevant handlers.
 
-## Verification
+New i18n keys:
 
-After changes, in dark mode open: Passaggi → "+", Secrets → "+", Profile avatar badge. Confirm:
-- Modal panel has visible border and readable text.
-- Date/time inputs show light icons and a dark-themed native picker.
-- No white surfaces on dark backgrounds (except intentional gradients).
+- `pointsEarned`: `"+{n} punti 🎉"` / `"+{n} points 🎉"`
+
+---
+
+## 3. Faster updates for "Your points"
+
+Root cause of slowness: the leaderboard row uses freshly-fetched RPC data, while the gradient strip reads `profile.points` from `AppContext`, which is only refreshed on auth events / manual calls. After a point-earning action we currently never call `refreshProfile()`.
+
+Fixes:
+
+- Call `refreshProfile()` from `AppContext` after each point-earning action listed above (this also enables the toast diff in step 2).
+- On the Home page, call `refreshProfile()` once on mount, so navigating back to Home always shows fresh points.
+
+Optional enhancement (low-cost): subscribe to realtime updates on the user's own row in `profiles` so points stay in sync even without a manual refresh. Will only add this if the simple refresh approach feels insufficient.
+
+---
+
+## Files to change
+
+- `src/pages/Home.tsx` — remove points stat card; remove "isMe" leaderboard highlight; call `refreshProfile()` on mount.
+- `src/pages/People.tsx` — keep existing toast; also call `refreshProfile()` after a correct guess.
+- `src/pages/Secrets.tsx` — after posting a secret or a comment, refresh profile and show point-earned toast via diff.
+- `src/pages/Profile.tsx` — after saving profile changes (facts/avatar/instagram), refresh and toast the diff.
+- `src/pages/Onboarding.tsx` — same diff-toast at the end of onboarding.
+- `src/lib/i18n.ts` — add `pointsEarned` (IT + EN).
+- `src/lib/utils.ts` — small `awardToast(prev, next, t)` helper.
+
+No DB / RLS / edge function changes needed.

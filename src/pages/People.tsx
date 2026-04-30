@@ -26,7 +26,7 @@ interface GuessState {
 
 export default function People() {
   const { t } = useT();
-  const { isAdmin, user, profile } = useApp();
+  const { isAdmin, user, profile, refreshProfile } = useApp();
   const [list, setList] = useState<PP[]>([]);
   const [q, setQ] = useState("");
   const [open, setOpen] = useState<PP | null>(null);
@@ -116,7 +116,10 @@ export default function People() {
         lie_index: res.lie_index,
       },
     }));
-    if (res?.correct) loadList();
+    if (res?.correct) {
+      loadList();
+      refreshProfile();
+    }
   };
 
   return (

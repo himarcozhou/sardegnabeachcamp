@@ -13,11 +13,15 @@ interface TopUser { id: string; name: string; surname: string; avatar_url: strin
 export default function Home() {
   const { t } = useT();
   const nav = useNavigate();
-  const { profile, user } = useApp();
+  const { profile, user, refreshProfile } = useApp();
   const [anns, setAnns] = useState<Announcement[]>([]);
   const [top, setTop] = useState<TopUser[]>([]);
   const [participants, setParticipants] = useState(0);
   const [secretsCount, setSecretsCount] = useState(0);
+
+  useEffect(() => {
+    refreshProfile();
+  }, [refreshProfile]);
 
   useEffect(() => {
     (async () => {
@@ -70,10 +74,9 @@ export default function Home() {
       </section>
 
       {/* Stats */}
-      <section className="grid grid-cols-3 gap-3">
+      <section className="grid grid-cols-2 gap-3">
         <StatCard icon={<Users className="h-5 w-5" />} label={t("participants")} value={participants} />
         <StatCard icon={<MessageSquareLock className="h-5 w-5" />} label={t("secretsCount")} value={secretsCount} />
-        <StatCard icon={<Trophy className="h-5 w-5" />} label={t("yourPoints")} value={profile?.points ?? 0} />
       </section>
 
       {/* Announcements */}
@@ -123,28 +126,22 @@ export default function Home() {
 
         <div className="rounded-2xl bg-card border border-border shadow-card divide-y divide-border overflow-hidden">
           {top.length === 0 && <div className="p-4 text-sm text-muted-foreground">{t("nothingHere")}</div>}
-          {top.map((u, i) => {
-            const isMe = user && u.id === user.id;
-            return (
-              <div
-                key={u.id}
-                className={`flex items-center gap-3 p-3 ${isMe ? "bg-accent/10" : ""}`}
-              >
-                <span className={`w-7 text-center font-extrabold ${i === 0 ? "text-accent" : "text-muted-foreground"}`}>
-                  {i + 1}
-                </span>
-                <Avatar name={u.name} surname={u.surname} url={u.avatar_url} size={36} />
-                <div className="flex-1 truncate">
-                  <div className="font-semibold truncate">
-                    {u.name} {u.surname}
-                  </div>
-                </div>
-                <div className="font-extrabold text-primary">
-                  {u.points} <span className="text-xs font-medium text-muted-foreground">{t("points")}</span>
+          {top.map((u, i) => (
+            <div key={u.id} className="flex items-center gap-3 p-3">
+              <span className={`w-7 text-center font-extrabold ${i === 0 ? "text-accent" : "text-muted-foreground"}`}>
+                {i + 1}
+              </span>
+              <Avatar name={u.name} surname={u.surname} url={u.avatar_url} size={36} />
+              <div className="flex-1 truncate">
+                <div className="font-semibold truncate">
+                  {u.name} {u.surname}
                 </div>
               </div>
-            );
-          })}
+              <div className="font-extrabold text-primary">
+                {u.points} <span className="text-xs font-medium text-muted-foreground">{t("points")}</span>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
     </div>

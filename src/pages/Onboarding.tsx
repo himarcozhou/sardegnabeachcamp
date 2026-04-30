@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar } from "@/components/Avatar";
 import { LangToggle } from "@/components/LangToggle";
 import { toast } from "sonner";
+import { awardToast } from "@/lib/utils";
 import { Instagram, Sparkles, Camera, ArrowLeft } from "lucide-react";
 import { hasSeenWelcome } from "@/pages/Welcome";
 
@@ -156,11 +157,13 @@ export default function Onboarding() {
           })
           .eq("id", newUserId);
 
-        await refreshProfile();
+        const fresh = await refreshProfile();
+        awardToast(0, fresh?.points, t("pointsEarned"));
         toast.success(t("accountCreated"));
         setStep(1);
       } else {
         // Existing logged-in user resuming onboarding
+        const prevPoints = profile?.points ?? 0;
         const avatarUrl = await uploadAvatar(user.id);
         const { error } = await supabase
           .from("profiles")
@@ -176,7 +179,8 @@ export default function Onboarding() {
           setSaving(false);
           return;
         }
-        await refreshProfile();
+        const fresh = await refreshProfile();
+        awardToast(prevPoints, fresh?.points, t("pointsEarned"));
         setStep(1);
       }
     } finally {
@@ -199,6 +203,7 @@ export default function Onboarding() {
       return;
     }
     setSaving(true);
+    const prevPoints = profile?.points ?? 0;
     const { error } = await supabase
       .from("profiles")
       .update({ three_facts: facts as any, onboarded: true })
@@ -209,7 +214,8 @@ export default function Onboarding() {
       return;
     }
     toast.success(t("success"));
-    await refreshProfile();
+    const fresh = await refreshProfile();
+    awardToast(prevPoints, fresh?.points, t("pointsEarned"));
     nav("/", { replace: true });
   };
 
