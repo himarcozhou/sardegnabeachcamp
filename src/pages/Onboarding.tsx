@@ -26,7 +26,8 @@ const accountSchema = z.object({
 });
 
 function makeEmail(name: string, surname: string) {
-  const slug = `${name}.${surname}`
+  const base = surname ? `${name}.${surname}` : name;
+  const slug = base
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
@@ -300,14 +301,16 @@ export default function Onboarding() {
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="surname">{t("surname")}</Label>
+                <Label htmlFor="surname">
+                  {t("surname")}{" "}
+                  <span className="text-muted-foreground">({t("optional")})</span>
+                </Label>
                 <Input
                   id="surname"
                   value={surname}
                   onChange={(e) => setSurname(e.target.value)}
                   maxLength={40}
                   autoComplete="family-name"
-                  required
                 />
               </div>
             </div>
@@ -321,7 +324,6 @@ export default function Onboarding() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   minLength={4}
-                  maxLength={100}
                   autoComplete="new-password"
                   required
                   placeholder={lang === "it" ? "Min. 4 caratteri" : "Min. 4 chars"}
