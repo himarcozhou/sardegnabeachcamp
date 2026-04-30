@@ -416,14 +416,17 @@ function ComposeRide({
             />
           </div>
           {editingPost && (
-            <div className="flex items-center justify-between py-2">
-              <Label className="cursor-pointer">{lang === "it" ? "Richieste aperte" : "Open requests"}</Label>
-              <input 
-                type="checkbox" 
-                checked={isOpen} 
-                onChange={(e) => setIsOpen(e.target.checked)}
-                className="w-5 h-5 accent-primary"
-              />
+            <div className="py-2">
+              <div className="flex items-center justify-between">
+                <Label className="cursor-pointer">{t("acceptNewRequests")}</Label>
+                <input 
+                  type="checkbox" 
+                  checked={isOpen} 
+                  onChange={(e) => setIsOpen(e.target.checked)}
+                  className="w-5 h-5 accent-primary"
+                />
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">{t("acceptNewRequestsHelp")}</p>
             </div>
           )}
           <Button
