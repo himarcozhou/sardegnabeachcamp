@@ -317,7 +317,7 @@ function ComposeRide({
   const { user, profile, refreshProfile } = useApp();
   const [date, setDate] = useState(editingPost?.ride_date || "");
   const [time, setTime] = useState(editingPost?.ride_time || "");
-  const [slots, setSlots] = useState(editingPost?.slots || 3);
+  const [slots, setSlots] = useState<string>(editingPost?.slots ? String(editingPost.slots) : "3");
   const [notes, setNotes] = useState(editingPost?.notes || "");
   const [origin, setOrigin] = useState(editingPost?.origin || "Resort Perdepera");
   const [destination, setDestination] = useState(editingPost?.destination || "Aeroporto Cagliari");
