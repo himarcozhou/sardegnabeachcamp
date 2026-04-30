@@ -14,10 +14,12 @@ import { awardToast } from "@/lib/utils";
 import { LogOut, Pencil, Shield, Camera, Instagram, Trophy, Trash2, Phone } from "lucide-react";
 import AdminPanel from "@/components/AdminPanel";
 import { InstallButton } from "@/components/InstallButton";
+import { useConfirm } from "@/components/ConfirmDialog";
 
 export default function Profile() {
   const { t, lang, setLang } = useT();
   const { profile, user, isAdmin, refreshProfile, signOut } = useApp();
+  const confirmDialog = useConfirm();
   const nav = useNavigate();
   const [editing, setEditing] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
@@ -80,7 +82,13 @@ export default function Profile() {
   };
 
   const deleteAccount = async () => {
-    if (!confirm(t("confirmDeleteAccount"))) return;
+    const ok = await confirmDialog({
+      title: t("deleteAccount"),
+      description: t("confirmDeleteAccount"),
+      confirmText: t("delete"),
+      destructive: true,
+    });
+    if (!ok) return;
     setDeleting(true);
     try {
       const { data: sessionData } = await supabase.auth.getSession();
@@ -155,7 +163,13 @@ export default function Profile() {
   };
 
   const exitAdmin = async () => {
-    if (!confirm(t("confirmExitAdmin"))) return;
+    const ok = await confirmDialog({
+      title: t("exitAdmin"),
+      description: t("confirmExitAdmin"),
+      confirmText: t("exitAdmin"),
+      destructive: true,
+    });
+    if (!ok) return;
     const { error } = await supabase
       .from("user_roles")
       .delete()
