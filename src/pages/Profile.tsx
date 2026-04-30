@@ -11,7 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { awardToast } from "@/lib/utils";
-import { LogOut, Pencil, Shield, Camera, Instagram, Trophy, Trash2 } from "lucide-react";
+import { LogOut, Pencil, Shield, Camera, Instagram, Trophy, Trash2, Phone } from "lucide-react";
 import AdminPanel from "@/components/AdminPanel";
 
 export default function Profile() {
@@ -25,6 +25,7 @@ export default function Profile() {
   const [name, setName] = useState(profile?.name || "");
   const [surname, setSurname] = useState(profile?.surname || "");
   const [ig, setIg] = useState(profile?.instagram_tag || "");
+  const [phone, setPhone] = useState(profile?.phone || "");
   const initialFacts = (profile?.three_facts && profile.three_facts.length === 3)
     ? profile.three_facts.map((f) => ({ text: f.text || "", is_lie: !!f.is_lie }))
     : [{ text: "", is_lie: false }, { text: "", is_lie: false }, { text: "", is_lie: false }];
@@ -60,11 +61,13 @@ export default function Profile() {
 
     setSaving(true);
     const cleanedIg = ig.trim().replace(/^@/, "").slice(0, 30) || null;
+    const cleanedPhone = phone.trim().slice(0, 30) || null;
     const prevPoints = profile?.points ?? 0;
     const { error } = await supabase.from("profiles").update({
       name: name.trim().slice(0, 40),
       surname: surname.trim().slice(0, 40),
       instagram_tag: cleanedIg,
+      phone: cleanedPhone,
       three_facts: cleanedFacts,
     }).eq("id", user.id);
     setSaving(false);
@@ -189,6 +192,11 @@ export default function Profile() {
               <Instagram className="h-3 w-3" /> @{profile.instagram_tag}
             </a>
           )}
+          {profile.phone && (
+            <a href={`tel:${profile.phone}`} className="text-sm flex items-center gap-1 opacity-90">
+              <Phone className="h-3 w-3" /> {profile.phone}
+            </a>
+          )}
           <div className="mt-1 flex items-center gap-1 text-sm font-bold">
             <Trophy className="h-4 w-4" /> {profile.points} {t("points")}
           </div>
@@ -238,6 +246,7 @@ export default function Profile() {
           setName(profile.name || "");
           setSurname(profile.surname || "");
           setIg(profile.instagram_tag || "");
+          setPhone(profile.phone || "");
           const f = (profile.three_facts && profile.three_facts.length === 3)
             ? profile.three_facts.map((x) => ({ text: x.text || "", is_lie: !!x.is_lie }))
             : [{ text: "", is_lie: false }, { text: "", is_lie: false }, { text: "", is_lie: false }];
@@ -285,6 +294,10 @@ export default function Profile() {
             <div className="space-y-1.5">
               <Label>{t("instagram")}</Label>
               <Input value={ig} onChange={(e) => setIg(e.target.value)} maxLength={30} />
+            </div>
+            <div className="space-y-1.5">
+              <Label>{t("phone")} <span className="text-muted-foreground text-xs">({t("optional")})</span></Label>
+              <Input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} maxLength={30} placeholder="+39 333 1234567" />
             </div>
             <div className="space-y-2 pt-2 border-t border-border">
               <Label className="text-sm font-bold">{t("editFacts")}</Label>

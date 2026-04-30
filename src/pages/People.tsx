@@ -5,7 +5,7 @@ import { useT } from "@/lib/i18n";
 import { Avatar } from "@/components/Avatar";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Instagram, Search, Check, X } from "lucide-react";
+import { Instagram, Search, Check, X, Phone } from "lucide-react";
 import { toast } from "sonner";
 
 interface PP {
@@ -13,6 +13,7 @@ interface PP {
   name: string;
   surname: string;
   instagram_tag: string | null;
+  phone: string | null;
   avatar_url: string | null;
   points: number;
   three_facts: { text: string }[] | null;
@@ -174,6 +175,14 @@ export default function People() {
                     className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
                   >
                     <Instagram className="h-4 w-4" /> @{open.instagram_tag}
+                  </a>
+                )}
+                {open.phone && (
+                  <a
+                    href={`tel:${open.phone}`}
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+                  >
+                    <Phone className="h-4 w-4" /> {open.phone}
                   </a>
                 )}
               </div>

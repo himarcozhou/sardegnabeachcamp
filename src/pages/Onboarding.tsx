@@ -12,7 +12,7 @@ import { Avatar } from "@/components/Avatar";
 import { LangToggle } from "@/components/LangToggle";
 import { toast } from "sonner";
 import { awardToast } from "@/lib/utils";
-import { Instagram, Sparkles, Camera, ArrowLeft } from "lucide-react";
+import { Instagram, Sparkles, Camera, ArrowLeft, Phone } from "lucide-react";
 import { hasSeenWelcome } from "@/pages/Welcome";
 
 const factSchema = z.object({
@@ -56,6 +56,7 @@ export default function Onboarding() {
   const [surname, setSurname] = useState(profile?.surname || "");
   const [password, setPassword] = useState("");
   const [instagram, setInstagram] = useState(profile?.instagram_tag || "");
+  const [phone, setPhone] = useState(profile?.phone || "");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(profile?.avatar_url || null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -119,6 +120,7 @@ export default function Onboarding() {
 
     try {
       const cleanedIg = instagram.trim().replace(/^@/, "").slice(0, 30) || null;
+      const cleanedPhone = phone.trim().slice(0, 30) || null;
 
       if (!user) {
         // Create new account
@@ -153,6 +155,7 @@ export default function Onboarding() {
             name: name.trim(),
             surname: surname.trim(),
             instagram_tag: cleanedIg,
+            phone: cleanedPhone,
             ...(avatarUrl ? { avatar_url: avatarUrl } : {}),
           })
           .eq("id", newUserId);
@@ -171,6 +174,7 @@ export default function Onboarding() {
             name: name.trim(),
             surname: surname.trim(),
             instagram_tag: cleanedIg,
+            phone: cleanedPhone,
             ...(avatarUrl ? { avatar_url: avatarUrl } : {}),
           })
           .eq("id", user.id);
@@ -359,6 +363,26 @@ export default function Onboarding() {
                   placeholder="username"
                   className="pl-9"
                   maxLength={30}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="phone">
+                {t("phone")}{" "}
+                <span className="text-muted-foreground">({t("optional")})</span>
+              </Label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+39 333 1234567"
+                  className="pl-9"
+                  maxLength={30}
+                  autoComplete="tel"
                 />
               </div>
             </div>
