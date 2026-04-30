@@ -7,6 +7,7 @@ import { AppProvider } from "@/contexts/AppContext";
 import { Layout } from "@/components/Layout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { InstallPrompt } from "@/components/InstallPrompt";
+import { ConfirmProvider } from "@/components/ConfirmDialog";
 import Auth from "./pages/Auth";
 import Welcome from "./pages/Welcome";
 import Onboarding from "./pages/Onboarding";
@@ -27,19 +28,21 @@ const App = () => (
       <Sonner position="top-center" />
       <BrowserRouter>
         <AppProvider>
-          <Routes>
-            <Route path="/welcome" element={<Welcome />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/onboarding" element={<Onboarding />} />
-            <Route path="/" element={<ProtectedRoute><Layout><Home /></Layout></ProtectedRoute>} />
-            <Route path="/secrets" element={<ProtectedRoute><Layout><Secrets /></Layout></ProtectedRoute>} />
-            <Route path="/games" element={<ProtectedRoute><Layout><Games /></Layout></ProtectedRoute>} />
-            <Route path="/passaggi" element={<ProtectedRoute><Layout><Passaggi /></Layout></ProtectedRoute>} />
-            <Route path="/people" element={<ProtectedRoute><Layout><People /></Layout></ProtectedRoute>} />
-            <Route path="/profile" element={<ProtectedRoute><Layout><Profile /></Layout></ProtectedRoute>} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <InstallPrompt />
+          <ConfirmProvider>
+            <Routes>
+              <Route path="/welcome" element={<Welcome />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/onboarding" element={<Onboarding />} />
+              <Route path="/" element={<ProtectedRoute><Layout><Home /></Layout></ProtectedRoute>} />
+              <Route path="/secrets" element={<ProtectedRoute><Layout><Secrets /></Layout></ProtectedRoute>} />
+              <Route path="/games" element={<ProtectedRoute><Layout><Games /></Layout></ProtectedRoute>} />
+              <Route path="/passaggi" element={<ProtectedRoute><Layout><Passaggi /></Layout></ProtectedRoute>} />
+              <Route path="/people" element={<ProtectedRoute><Layout><People /></Layout></ProtectedRoute>} />
+              <Route path="/profile" element={<ProtectedRoute><Layout><Profile /></Layout></ProtectedRoute>} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <InstallPrompt />
+          </ConfirmProvider>
         </AppProvider>
       </BrowserRouter>
     </TooltipProvider>
