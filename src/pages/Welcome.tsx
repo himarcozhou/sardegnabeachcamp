@@ -25,27 +25,27 @@ export default function Welcome() {
   const slides = [
     {
       image: welcome1,
-      title: lang === "it" ? "Buon Compleanno Alessia! 🎂🏐" : "Happy Birthday Alessia! 🎂🏐",
+      title: lang === "it" ? "Benvenuto in Sardegna 🌊" : "Welcome to Sardegna 🌊",
       desc:
         lang === "it"
-          ? "Festeggiamo Alessia con una giornata di beach volley in riva al mare: sole, sabbia e tante risate."
-          : "Let's celebrate Alessia with a beach volley day by the sea: sun, sand and lots of laughs.",
+          ? "Un beach camp tra rocce rosa, sabbia bianca e mare turchese. La nostra base sull'isola ti aspetta."
+          : "A beach camp among pink rocks, white sand and turquoise sea. Our island base is waiting for you.",
     },
     {
       image: welcome2,
-      title: lang === "it" ? "Beach Volley chill 🏖️" : "Chill Beach Volley 🏖️",
+      title: lang === "it" ? "Giornate al mare 🏖️" : "Days by the sea 🏖️",
       desc:
         lang === "it"
-          ? "Partite rilassate, niente pressione: vieni a giocare, tifare o semplicemente prendere il sole con noi."
-          : "Relaxed matches, no pressure: come play, cheer or just soak up the sun with us.",
+          ? "Snorkeling, kayak, sole e relax sotto l'ombrellone. Vivi le calette più belle insieme al gruppo."
+          : "Snorkeling, kayak, sunbathing and chill under the umbrella. Enjoy the best coves with the group.",
     },
     {
       image: welcome3,
-      title: lang === "it" ? "After-party 🍕🥂" : "After-party 🍕🥂",
+      title: lang === "it" ? "Tramonti e cene insieme 🌅" : "Sunsets and dinners together 🌅",
       desc:
         lang === "it"
-          ? "Dopo il beach, ci spostiamo a mangiare qualcosa insieme (luogo da definire). Non mancare!"
-          : "After the beach, we'll head somewhere to grab a bite together (venue TBD). Don't miss it!",
+          ? "La sera ci ritroviamo a tavola sulla spiaggia: buon cibo, brindisi e luci sospese sopra il mare."
+          : "Evenings at a long table on the beach: good food, toasts and string lights above the sea.",
     },
   ];
 
@@ -108,7 +108,6 @@ export default function Welcome() {
               key={i}
               className="min-w-full h-full flex flex-col items-center px-8 pt-6"
             >
-              {/* Hero image */}
               <div className="w-full max-w-sm flex-1 flex items-center justify-center">
                 <img
                   src={s.image}
@@ -116,11 +115,10 @@ export default function Welcome() {
                   width={832}
                   height={1024}
                   loading={i === 0 ? "eager" : "lazy"}
-                  className="w-full h-full object-contain max-h-[50vh]"
+                  className="w-full h-full object-contain max-h-[50vh] rounded-2xl"
                 />
               </div>
 
-              {/* Title + description below */}
               <div className="w-full max-w-sm text-center mt-6 mb-2">
                 <h1 className="text-3xl font-extrabold mb-3 text-foreground">
                   {s.title}
@@ -134,12 +132,11 @@ export default function Welcome() {
         </div>
       </div>
 
-      {/* Footer: buttons + dots */}
+      {/* Footer */}
       <div
         className="px-8 pt-4 space-y-8"
         style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 3.5rem)" }}
       >
-        {/* Buttons row: Salta + counter + Avanti together */}
         <div className="flex items-center justify-between gap-4">
           <button
             onClick={finish}
@@ -164,13 +161,12 @@ export default function Welcome() {
           </Button>
         </div>
 
-        {/* Index dots */}
         <div className="flex justify-center items-center gap-2.5 py-2">
           {slides.map((_, i) => (
             <button
               key={i}
               onClick={() => setStep(i)}
-              aria-label={`Slide ${i + 1} di ${slides.length}`}
+              aria-label={`Slide ${i + 1}`}
               className={cn(
                 "h-2.5 rounded-full transition-all",
                 i === step ? "w-10 bg-primary" : "w-2.5 bg-muted"

@@ -13,6 +13,7 @@ import Onboarding from "./pages/Onboarding";
 import Home from "./pages/Home";
 import Secrets from "./pages/Secrets";
 import Games from "./pages/Games";
+import Passaggi from "./pages/Passaggi";
 import People from "./pages/People";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound.tsx";

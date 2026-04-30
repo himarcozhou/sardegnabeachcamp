@@ -5,7 +5,7 @@ import { useApp } from "@/contexts/AppContext";
 import { useT } from "@/lib/i18n";
 import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/ui/button";
-import { Megaphone, Trophy, Users, MessageSquareLock, Sparkles } from "lucide-react";
+import { Megaphone, Trophy, Users, MessageSquareLock, Sparkles, Star } from "lucide-react";
 
 interface Announcement { id: string; title: string; content: string; }
 interface TopUser { id: string; name: string; surname: string; avatar_url: string | null; points: number; }
@@ -13,22 +13,24 @@ interface TopUser { id: string; name: string; surname: string; avatar_url: strin
 export default function Home() {
   const { t } = useT();
   const nav = useNavigate();
-  const { profile } = useApp();
+  const { profile, user } = useApp();
   const [anns, setAnns] = useState<Announcement[]>([]);
   const [top, setTop] = useState<TopUser[]>([]);
   const [participants, setParticipants] = useState(0);
+  const [secretsCount, setSecretsCount] = useState(0);
 
   useEffect(() => {
     (async () => {
       const now = new Date().toISOString();
 
-      const [annRes, topRes] = await Promise.all([
+      const [annRes, topRes, secretsRes] = await Promise.all([
         supabase.from("announcements")
           .select("id,title,content,starts_at,ends_at")
           .lte("starts_at", now)
           .order("priority", { ascending: false })
           .limit(5),
         supabase.rpc("get_public_profiles"),
+        supabase.rpc("get_public_secrets"),
       ]);
 
       const filtered = (annRes.data || []).filter((a: any) => !a.ends_at || a.ends_at >= now);
@@ -38,8 +40,17 @@ export default function Home() {
       const sorted = [...allProfiles].sort((a, b) => b.points - a.points).slice(0, 5);
       setTop(sorted as any);
       setParticipants(allProfiles.length);
+
+      setSecretsCount(((secretsRes.data as any[]) || []).length);
     })();
   }, []);
+
+  const myRank = (() => {
+    if (!user) return null;
+    // Best-effort: rank from the leaderboard view if present
+    const idx = top.findIndex((u) => u.id === user.id);
+    return idx >= 0 ? idx + 1 : null;
+  })();
 
   return (
     <div className="space-y-5 animate-fade-in">
@@ -59,8 +70,9 @@ export default function Home() {
       </section>
 
       {/* Stats */}
-      <section className="grid grid-cols-2 gap-3">
+      <section className="grid grid-cols-3 gap-3">
         <StatCard icon={<Users className="h-5 w-5" />} label={t("participants")} value={participants} />
+        <StatCard icon={<MessageSquareLock className="h-5 w-5" />} label={t("secretsCount")} value={secretsCount} />
         <StatCard icon={<Trophy className="h-5 w-5" />} label={t("yourPoints")} value={profile?.points ?? 0} />
       </section>
 
@@ -86,20 +98,53 @@ export default function Home() {
         <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-2">
           <Trophy className="h-4 w-4" /> {t("leaderboard")}
         </h3>
+
+        {/* Highlighted user points strip */}
+        {profile && (
+          <div className="rounded-2xl gradient-festive text-white p-4 shadow-glow mb-3 flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center">
+              <Star className="h-5 w-5" fill="currentColor" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-xs uppercase tracking-wider opacity-90 font-bold">
+                {t("yourPointsHighlight")}
+              </div>
+              <div className="font-extrabold truncate">
+                {profile.name} {profile.surname}
+                {myRank && <span className="opacity-80 font-medium"> · #{myRank}</span>}
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-2xl font-extrabold leading-none">{profile.points}</div>
+              <div className="text-[10px] uppercase opacity-90 font-bold">{t("points")}</div>
+            </div>
+          </div>
+        )}
+
         <div className="rounded-2xl bg-card border border-border shadow-card divide-y divide-border overflow-hidden">
           {top.length === 0 && <div className="p-4 text-sm text-muted-foreground">{t("nothingHere")}</div>}
-          {top.map((u, i) => (
-            <div key={u.id} className="flex items-center gap-3 p-3">
-              <span className={`w-7 text-center font-extrabold ${i === 0 ? "text-accent" : "text-muted-foreground"}`}>
-                {i + 1}
-              </span>
-              <Avatar name={u.name} surname={u.surname} url={u.avatar_url} size={36} />
-              <div className="flex-1 truncate">
-                <div className="font-semibold truncate">{u.name} {u.surname}</div>
+          {top.map((u, i) => {
+            const isMe = user && u.id === user.id;
+            return (
+              <div
+                key={u.id}
+                className={`flex items-center gap-3 p-3 ${isMe ? "bg-accent/10" : ""}`}
+              >
+                <span className={`w-7 text-center font-extrabold ${i === 0 ? "text-accent" : "text-muted-foreground"}`}>
+                  {i + 1}
+                </span>
+                <Avatar name={u.name} surname={u.surname} url={u.avatar_url} size={36} />
+                <div className="flex-1 truncate">
+                  <div className="font-semibold truncate">
+                    {u.name} {u.surname}
+                  </div>
+                </div>
+                <div className="font-extrabold text-primary">
+                  {u.points} <span className="text-xs font-medium text-muted-foreground">{t("points")}</span>
+                </div>
               </div>
-              <div className="font-extrabold text-primary">{u.points} <span className="text-xs font-medium text-muted-foreground">{t("points")}</span></div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
     </div>
