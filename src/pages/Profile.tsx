@@ -11,7 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { awardToast } from "@/lib/utils";
-import { LogOut, Pencil, Shield, Camera, Instagram, Trophy } from "lucide-react";
+import { LogOut, Pencil, Shield, Camera, Instagram, Trophy, Trash2 } from "lucide-react";
 import AdminPanel from "@/components/AdminPanel";
 
 export default function Profile() {
@@ -25,7 +25,13 @@ export default function Profile() {
   const [name, setName] = useState(profile?.name || "");
   const [surname, setSurname] = useState(profile?.surname || "");
   const [ig, setIg] = useState(profile?.instagram_tag || "");
+  const initialFacts = (profile?.three_facts && profile.three_facts.length === 3)
+    ? profile.three_facts.map((f) => ({ text: f.text || "", is_lie: !!f.is_lie }))
+    : [{ text: "", is_lie: false }, { text: "", is_lie: false }, { text: "", is_lie: false }];
+  const [facts, setFacts] = useState(initialFacts);
+  const [lieIdx, setLieIdx] = useState<number>(initialFacts.findIndex((f) => f.is_lie));
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   if (!profile || !user) return <div className="text-center py-10 text-muted-foreground">{t("loading")}</div>;
@@ -46,6 +52,12 @@ export default function Profile() {
   };
 
   const save = async () => {
+    // Validate facts
+    const cleanedFacts = facts.map((f) => ({ text: (f.text || "").trim().slice(0, 200), is_lie: false }));
+    if (cleanedFacts.some((f) => !f.text)) { toast.error(t("fillAllFacts")); return; }
+    if (lieIdx < 0 || lieIdx > 2) { toast.error(t("pickLie")); return; }
+    cleanedFacts[lieIdx].is_lie = true;
+
     setSaving(true);
     const cleanedIg = ig.trim().replace(/^@/, "").slice(0, 30) || null;
     const prevPoints = profile?.points ?? 0;
@@ -53,6 +65,7 @@ export default function Profile() {
       name: name.trim().slice(0, 40),
       surname: surname.trim().slice(0, 40),
       instagram_tag: cleanedIg,
+      three_facts: cleanedFacts,
     }).eq("id", user.id);
     setSaving(false);
     if (error) { toast.error(error.message); return; }
@@ -60,6 +73,35 @@ export default function Profile() {
     setEditing(false);
     const fresh = await refreshProfile();
     awardToast(prevPoints, fresh?.points, t("pointsEarned"));
+  };
+
+  const deleteAccount = async () => {
+    if (!confirm(t("confirmDeleteAccount"))) return;
+    setDeleting(true);
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData?.session?.access_token;
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-user`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+          },
+          body: JSON.stringify({}),
+        }
+      );
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data?.error) { toast.error(data?.error || "Error"); setDeleting(false); return; }
+      toast.success(t("accountDeleted"));
+      await signOut();
+      nav("/auth", { replace: true });
+    } catch (e: any) {
+      toast.error(e?.message || "Error");
+      setDeleting(false);
+    }
   };
 
   const onFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -192,7 +234,17 @@ export default function Profile() {
 
       {/* Actions */}
       <div className="space-y-2">
-        <Button onClick={() => setEditing(true)} variant="outline" className="w-full rounded-xl h-12 font-bold">
+        <Button onClick={() => {
+          setName(profile.name || "");
+          setSurname(profile.surname || "");
+          setIg(profile.instagram_tag || "");
+          const f = (profile.three_facts && profile.three_facts.length === 3)
+            ? profile.three_facts.map((x) => ({ text: x.text || "", is_lie: !!x.is_lie }))
+            : [{ text: "", is_lie: false }, { text: "", is_lie: false }, { text: "", is_lie: false }];
+          setFacts(f);
+          setLieIdx(f.findIndex((x) => x.is_lie));
+          setEditing(true);
+        }} variant="outline" className="w-full rounded-xl h-12 font-bold">
           <Pencil className="h-4 w-4 mr-2" /> {t("editProfile")}
         </Button>
         {isAdmin ? (
@@ -212,6 +264,9 @@ export default function Profile() {
         <Button onClick={doLogout} variant="ghost" className="w-full rounded-xl h-12 text-destructive">
           <LogOut className="h-4 w-4 mr-2" /> {t("logout")}
         </Button>
+        <Button onClick={deleteAccount} disabled={deleting} variant="ghost" className="w-full rounded-xl h-12 text-destructive">
+          <Trash2 className="h-4 w-4 mr-2" /> {deleting ? t("loading") : t("deleteAccount")}
+        </Button>
       </div>
 
       {/* Edit dialog */}
@@ -230,6 +285,35 @@ export default function Profile() {
             <div className="space-y-1.5">
               <Label>{t("instagram")}</Label>
               <Input value={ig} onChange={(e) => setIg(e.target.value)} maxLength={30} />
+            </div>
+            <div className="space-y-2 pt-2 border-t border-border">
+              <Label className="text-sm font-bold">{t("editFacts")}</Label>
+              <p className="text-xs text-muted-foreground">{t("threeFactsHelp")}</p>
+              {facts.map((f, i) => (
+                <div key={i} className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <Input
+                      value={f.text}
+                      onChange={(e) => {
+                        const next = [...facts];
+                        next[i] = { ...next[i], text: e.target.value };
+                        setFacts(next);
+                      }}
+                      placeholder={`${t("fact")} ${i + 1}`}
+                      maxLength={200}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setLieIdx(i)}
+                      className={`shrink-0 px-2 py-1 rounded-lg text-xs font-bold border ${
+                        lieIdx === i ? "bg-accent text-accent-foreground border-accent" : "bg-muted text-muted-foreground border-border"
+                      }`}
+                    >
+                      🤥
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
             <Button onClick={save} disabled={saving} className="w-full gradient-festive text-white border-0 rounded-xl font-bold">
               {saving ? t("loading") : t("saveProfile")}

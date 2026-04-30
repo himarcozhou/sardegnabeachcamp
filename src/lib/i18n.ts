@@ -151,6 +151,13 @@ export const dict = {
     notificationsBlocked: "Notifiche bloccate dal browser",
     notificationsUnsupported: "Notifiche non supportate su questo dispositivo",
     notifyRides: "Ricevi notifiche per i passaggi",
+    deleteUser: "Elimina utente",
+    confirmDeleteUser: "Eliminare definitivamente questo utente e tutti i suoi dati?",
+    userDeleted: "Utente eliminato",
+    deleteAccount: "Elimina il mio account",
+    confirmDeleteAccount: "Sei sicuro? Verranno eliminati definitivamente il tuo account e tutti i tuoi dati. Questa azione è irreversibile.",
+    accountDeleted: "Account eliminato",
+    editFacts: "Modifica i 3 fatti",
   },
   en: {
     appName: "BVCamp Sardegna",
@@ -300,6 +307,13 @@ export const dict = {
     notificationsBlocked: "Notifications blocked by browser",
     notificationsUnsupported: "Notifications not supported on this device",
     notifyRides: "Get notified about rides",
+    deleteUser: "Delete user",
+    confirmDeleteUser: "Permanently delete this user and all their data?",
+    userDeleted: "User deleted",
+    deleteAccount: "Delete my account",
+    confirmDeleteAccount: "Are you sure? Your account and all your data will be permanently deleted. This action cannot be undone.",
+    accountDeleted: "Account deleted",
+    editFacts: "Edit 3 facts",
   },
 } as const;
 
