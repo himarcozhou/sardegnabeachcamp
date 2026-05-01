@@ -97,6 +97,38 @@ export default function Passaggi() {
     load();
   }, [load]);
 
+  const location = useLocation();
+  const [highlightId, setHighlightId] = useState<string | null>(null);
+  const focusHandledRef = useRef(false);
+
+  useEffect(() => {
+    const state = location.state as { focusRideId?: string; mode?: "manage" | "request" } | null;
+    if (!state?.focusRideId || focusHandledRef.current) return;
+    if (posts.length === 0) return;
+    const post = posts.find((p) => p.id === state.focusRideId);
+    if (!post) return;
+    focusHandledRef.current = true;
+
+    if (state.mode === "manage" && user?.id === post.driver_id) {
+      setOpenManageFor(post);
+    } else if (state.mode === "request") {
+      const myReq = myRequests[post.id];
+      if (myReq) {
+        setOpenRequestFor(post);
+        setEditingRequest(myReq);
+      }
+    }
+
+    setHighlightId(post.id);
+    setTimeout(() => {
+      const el = document.getElementById(`ride-${post.id}`);
+      el?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 50);
+    setTimeout(() => setHighlightId(null), 2000);
+
+    window.history.replaceState({}, "");
+  }, [location.state, posts, myRequests, user]);
+
   return (
     <div className="space-y-3 animate-fade-in pb-20">
       <div className="rounded-2xl border border-primary/20 bg-primary/5 p-3 flex items-start gap-2">
