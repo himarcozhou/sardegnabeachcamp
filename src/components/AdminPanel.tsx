@@ -144,13 +144,13 @@ export default function AdminPanel() {
           {users.map((u) => (
             <div
               key={u.id}
-              className={`flex items-center gap-2 p-2 rounded-lg ${
+              className={`flex flex-wrap items-center gap-2 p-2 rounded-lg ${
                 u.id === user?.id
                   ? "bg-primary/15 ring-2 ring-primary"
                   : "bg-muted"
               }`}
             >
-              <div className="flex-1 text-sm font-medium truncate">
+              <div className="flex-1 min-w-0 basis-full sm:basis-auto text-sm font-medium truncate">
                 {u.name} {u.surname}
                 {u.id === user?.id && (
                   <span className="ml-2 text-xs text-primary font-bold">({t("youLabel")})</span>
