@@ -49,7 +49,7 @@ export default function Home() {
       setAnns(filtered);
 
       const allProfiles = ((topRes.data as any[]) || []);
-      const sorted = [...allProfiles].sort((a, b) => b.points - a.points).slice(0, 5);
+      const sorted = [...allProfiles].sort((a, b) => b.points - a.points).slice(0, 20);
       setTop(sorted as any);
       setParticipants(allProfiles.length);
 
