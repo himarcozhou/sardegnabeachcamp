@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useApp } from "@/contexts/AppContext";
 import { awardToast } from "@/lib/utils";
@@ -96,6 +97,38 @@ export default function Passaggi() {
     load();
   }, [load]);
 
+  const location = useLocation();
+  const [highlightId, setHighlightId] = useState<string | null>(null);
+  const focusHandledRef = useRef(false);
+
+  useEffect(() => {
+    const state = location.state as { focusRideId?: string; mode?: "manage" | "request" } | null;
+    if (!state?.focusRideId || focusHandledRef.current) return;
+    if (posts.length === 0) return;
+    const post = posts.find((p) => p.id === state.focusRideId);
+    if (!post) return;
+    focusHandledRef.current = true;
+
+    if (state.mode === "manage" && user?.id === post.driver_id) {
+      setOpenManageFor(post);
+    } else if (state.mode === "request") {
+      const myReq = myRequests[post.id];
+      if (myReq) {
+        setOpenRequestFor(post);
+        setEditingRequest(myReq);
+      }
+    }
+
+    setHighlightId(post.id);
+    setTimeout(() => {
+      const el = document.getElementById(`ride-${post.id}`);
+      el?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 50);
+    setTimeout(() => setHighlightId(null), 2000);
+
+    window.history.replaceState({}, "");
+  }, [location.state, posts, myRequests, user]);
+
   return (
     <div className="space-y-3 animate-fade-in pb-20">
       <div className="rounded-2xl border border-primary/20 bg-primary/5 p-3 flex items-start gap-2">
@@ -117,7 +150,8 @@ export default function Passaggi() {
         return (
           <article
             key={p.id}
-            className={`rounded-2xl bg-card border p-4 shadow-card ${p.is_open ? "border-border" : "border-muted opacity-70"}`}
+            id={`ride-${p.id}`}
+            className={`rounded-2xl bg-card border p-4 shadow-card transition-all ${p.is_open ? "border-border" : "border-muted opacity-70"} ${highlightId === p.id ? "ring-2 ring-primary shadow-glow" : ""}`}
           >
             <div className="flex items-center gap-3 mb-3">
               <Avatar

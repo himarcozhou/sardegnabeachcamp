@@ -153,7 +153,7 @@ export function RidesSection() {
             {myRides.map((r) => (
               <button
                 key={r.id}
-                onClick={() => nav("/passaggi")}
+                onClick={() => nav("/passaggi", { state: { focusRideId: r.id, mode: "manage" } })}
                 className="w-full text-left px-4 py-3 border-b border-border last:border-b-0 hover:bg-muted/40 transition-smooth"
               >
                 <div className="flex items-center gap-2 text-sm font-semibold mb-1">
@@ -197,7 +197,7 @@ export function RidesSection() {
             {myRequests.map((r) => (
               <button
                 key={r.id}
-                onClick={() => nav("/passaggi")}
+                onClick={() => nav("/passaggi", { state: { focusRideId: r.ride_post_id, mode: "request" } })}
                 className="w-full text-left px-4 py-3 border-b border-border last:border-b-0 hover:bg-muted/40 transition-smooth"
               >
                 <div className="flex items-center gap-2 text-sm font-semibold mb-1">
