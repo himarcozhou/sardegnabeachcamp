@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { toast } from "sonner";
 import { awardToast } from "@/lib/utils";
 import { LogOut, Pencil, Shield, Camera, Instagram, Trophy, Trash2, Phone } from "lucide-react";
@@ -373,15 +374,21 @@ export default function Profile() {
       </Dialog>
 
       {/* Admin Panel */}
-      <Dialog open={adminPanel} onOpenChange={setAdminPanel}>
-        <DialogContent
-          style={{ width: "calc(100vw - 1rem)", maxWidth: "min(42rem, calc(100vw - 1rem))" }}
-          className="rounded-3xl max-h-[90vh] overflow-y-auto overflow-x-hidden p-4 sm:p-6"
+      <Sheet open={adminPanel} onOpenChange={setAdminPanel}>
+        <SheetContent
+          side="bottom"
+          className="h-[92vh] p-0 rounded-t-3xl border-t-0 flex flex-col sm:max-w-2xl sm:mx-auto"
         >
-          <DialogHeader><DialogTitle>{t("adminPanel")}</DialogTitle></DialogHeader>
-          <AdminPanel />
-        </DialogContent>
-      </Dialog>
+          <SheetHeader className="px-4 pt-4 pb-3 border-b border-border text-left">
+            <SheetTitle className="flex items-center gap-2">
+              <Shield className="h-5 w-5 text-primary" /> {t("adminPanel")}
+            </SheetTitle>
+          </SheetHeader>
+          <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 pb-8">
+            <AdminPanel />
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
