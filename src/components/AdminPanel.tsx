@@ -93,10 +93,10 @@ export default function AdminPanel() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Announcements */}
       <section className="space-y-3">
-        <h4 className="font-bold flex items-center gap-2">
+        <h4 className="font-bold flex items-center gap-2 text-sm">
           <Megaphone className="h-4 w-4" /> {t("manageAnnouncements")}
         </h4>
         <div className="space-y-2 rounded-2xl bg-muted p-3">
@@ -109,11 +109,11 @@ export default function AdminPanel() {
             <Textarea value={annContent} onChange={(e) => setAnnContent(e.target.value)} maxLength={2000} rows={3} />
           </div>
           <div className="flex items-end gap-2">
-            <div className="space-y-1.5 flex-1">
+            <div className="space-y-1.5 w-24">
               <Label className="text-xs">{t("priority")}</Label>
-              <Input type="number" value={annPriority} onChange={(e) => setAnnPriority(e.target.value)} className="w-24" />
+              <Input type="number" value={annPriority} onChange={(e) => setAnnPriority(e.target.value)} />
             </div>
-            <Button onClick={postAnnouncement} disabled={posting} className="gradient-festive text-white border-0 rounded-xl font-bold">
+            <Button onClick={postAnnouncement} disabled={posting} className="flex-1 gradient-festive text-white border-0 rounded-xl font-bold">
               {t("publish")}
             </Button>
           </div>
@@ -126,10 +126,10 @@ export default function AdminPanel() {
             <div key={a.id} className="flex items-start gap-2 p-2 rounded-lg bg-card border border-border">
               <div className="flex-1 min-w-0">
                 <div className="font-bold text-sm truncate">{a.title}</div>
-                <div className="text-xs text-muted-foreground line-clamp-2">{a.content}</div>
+                <div className="text-xs text-muted-foreground line-clamp-2 break-words">{a.content}</div>
                 <div className="text-xs text-muted-foreground mt-0.5">#{a.priority}</div>
               </div>
-              <Button size="icon" variant="ghost" onClick={() => deleteAnnouncement(a.id)} className="text-destructive shrink-0">
+              <Button size="icon" variant="ghost" onClick={() => deleteAnnouncement(a.id)} className="text-destructive shrink-0 h-8 w-8">
                 <Trash2 className="h-4 w-4" />
               </Button>
             </div>
@@ -139,39 +139,41 @@ export default function AdminPanel() {
 
       {/* Users */}
       <section className="space-y-3">
-        <h4 className="font-bold">{t("allUsers")}</h4>
+        <h4 className="font-bold text-sm">{t("allUsers")}</h4>
         <div className="space-y-2">
           {users.map((u) => (
             <div
               key={u.id}
-              className={`flex flex-wrap items-center gap-2 p-2 rounded-lg ${
+              className={`p-2.5 rounded-xl ${
                 u.id === user?.id
                   ? "bg-primary/15 ring-2 ring-primary"
                   : "bg-muted"
               }`}
             >
-              <div className="flex-1 min-w-0 basis-full sm:basis-auto text-sm font-medium truncate">
+              <div className="text-sm font-medium truncate mb-2">
                 {u.name} {u.surname}
                 {u.id === user?.id && (
                   <span className="ml-2 text-xs text-primary font-bold">({t("youLabel")})</span>
                 )}
               </div>
-              <Input
-                type="number"
-                defaultValue={u.points}
-                onChange={(e) => setPointsEdit({ ...pointsEdit, [u.id]: e.target.value })}
-                className="w-20 h-8"
-              />
-              <Button size="sm" onClick={() => savePoints(u.id)}>{t("save")}</Button>
-              <Button
-                size="icon"
-                variant="ghost"
-                onClick={() => deleteUser(u.id, `${u.name} ${u.surname}`)}
-                className="text-destructive shrink-0 h-8 w-8"
-                aria-label={t("deleteUser")}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
+              <div className="flex items-center gap-2">
+                <Input
+                  type="number"
+                  defaultValue={u.points}
+                  onChange={(e) => setPointsEdit({ ...pointsEdit, [u.id]: e.target.value })}
+                  className="w-20 h-9"
+                />
+                <Button size="sm" onClick={() => savePoints(u.id)} className="flex-1 h-9">{t("save")}</Button>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => deleteUser(u.id, `${u.name} ${u.surname}`)}
+                  className="text-destructive shrink-0 h-9 w-9"
+                  aria-label={t("deleteUser")}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           ))}
         </div>
