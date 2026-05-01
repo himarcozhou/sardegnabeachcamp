@@ -40,7 +40,7 @@ export default function Home() {
           .select("id,title,content,starts_at,ends_at")
           .lte("starts_at", now)
           .order("priority", { ascending: false })
-          .limit(5),
+          .limit(20),
         supabase.rpc("get_public_profiles"),
         supabase.rpc("get_public_secrets"),
       ]);
@@ -49,7 +49,7 @@ export default function Home() {
       setAnns(filtered);
 
       const allProfiles = ((topRes.data as any[]) || []);
-      const sorted = [...allProfiles].sort((a, b) => b.points - a.points).slice(0, 5);
+      const sorted = [...allProfiles].sort((a, b) => b.points - a.points).slice(0, 20);
       setTop(sorted as any);
       setParticipants(allProfiles.length);
 
