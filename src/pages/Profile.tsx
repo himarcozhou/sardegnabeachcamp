@@ -374,7 +374,7 @@ export default function Profile() {
 
       {/* Admin Panel */}
       <Dialog open={adminPanel} onOpenChange={setAdminPanel}>
-        <DialogContent className="rounded-3xl max-w-2xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="rounded-3xl max-w-2xl w-[calc(100vw-1rem)] max-h-[90vh] overflow-y-auto p-4 sm:p-6">
           <DialogHeader><DialogTitle>{t("adminPanel")}</DialogTitle></DialogHeader>
           <AdminPanel />
         </DialogContent>
