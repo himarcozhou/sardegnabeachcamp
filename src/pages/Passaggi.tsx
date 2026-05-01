@@ -150,7 +150,8 @@ export default function Passaggi() {
         return (
           <article
             key={p.id}
-            className={`rounded-2xl bg-card border p-4 shadow-card ${p.is_open ? "border-border" : "border-muted opacity-70"}`}
+            id={`ride-${p.id}`}
+            className={`rounded-2xl bg-card border p-4 shadow-card transition-all ${p.is_open ? "border-border" : "border-muted opacity-70"} ${highlightId === p.id ? "ring-2 ring-primary shadow-glow" : ""}`}
           >
             <div className="flex items-center gap-3 mb-3">
               <Avatar
