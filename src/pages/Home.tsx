@@ -40,7 +40,7 @@ export default function Home() {
           .select("id,title,content,starts_at,ends_at")
           .lte("starts_at", now)
           .order("priority", { ascending: false })
-          .limit(5),
+          .limit(20),
         supabase.rpc("get_public_profiles"),
         supabase.rpc("get_public_secrets"),
       ]);
