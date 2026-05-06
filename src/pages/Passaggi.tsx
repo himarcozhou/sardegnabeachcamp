@@ -283,14 +283,31 @@ export default function Passaggi() {
                       {myReq.status === "rejected" && t("statusRejected")}
                     </div>
                     {myReq.status === "pending" && (
+                      <div className="flex items-center justify-center gap-3">
+                        <button
+                          onClick={() => {
+                            setOpenRequestFor(p);
+                            setEditingRequest(myReq);
+                          }}
+                          className="text-[10px] text-muted-foreground hover:text-foreground font-semibold"
+                        >
+                          {t("edit")}
+                        </button>
+                        <span className="text-[10px] text-muted-foreground">·</span>
+                        <button
+                          onClick={() => cancelMyRequest(myReq.id)}
+                          className="text-[10px] text-destructive hover:opacity-80 font-semibold"
+                        >
+                          {t("cancelRequest")}
+                        </button>
+                      </div>
+                    )}
+                    {myReq.status === "accepted" && (
                       <button
-                        onClick={() => {
-                          setOpenRequestFor(p);
-                          setEditingRequest(myReq);
-                        }}
-                        className="text-[10px] text-center text-muted-foreground hover:text-foreground font-semibold"
+                        onClick={() => cancelMyRequest(myReq.id)}
+                        className="text-[10px] text-center text-destructive hover:opacity-80 font-semibold"
                       >
-                        {t("edit")}
+                        {t("cancelSeat")}
                       </button>
                     )}
                   </div>
