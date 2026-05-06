@@ -97,6 +97,26 @@ export default function Passaggi() {
     load();
   }, [load]);
 
+  const cancelMyRequest = async (id: string) => {
+    const ok = await confirmDialog({
+      title: t("cancelRequestConfirmTitle"),
+      description: t("cancelRequestConfirmDesc"),
+      confirmText: t("cancelRequest"),
+      destructive: true,
+    });
+    if (!ok) return;
+    const { error } = await supabase
+      .from("ride_requests")
+      .update({ status: "cancelled" })
+      .eq("id", id);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success(t("requestCancelled"));
+    load();
+  };
+
   const location = useLocation();
   const [highlightId, setHighlightId] = useState<string | null>(null);
   const focusHandledRef = useRef(false);
