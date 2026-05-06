@@ -107,9 +107,13 @@ export function NotificationsButton({ className }: Props) {
       setItems((prev) => prev.map((x) => (x.id === n.id ? { ...x, read: true } : x)));
       await supabase.from("notifications").update({ read: true }).eq("id", n.id);
     }
-    if (n.data?.ride_post_id || n.type.startsWith("ride_")) {
+    const rideId = n.data?.ride_post_id;
+    if (rideId || n.type.startsWith("ride_")) {
       setOpen(false);
-      navigate("/passaggi");
+      let mode: "manage" | "request" | undefined;
+      if (n.type === "ride_request_new") mode = "manage";
+      else if (n.type === "ride_request_accepted" || n.type === "ride_request_rejected") mode = "request";
+      navigate("/passaggi", rideId ? { state: { focusRideId: rideId, mode } } : undefined);
     }
   };
 
