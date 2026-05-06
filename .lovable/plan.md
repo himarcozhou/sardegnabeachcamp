@@ -1,26 +1,28 @@
 ## Goal
-Clicking a ride-related notification in the bell popover should jump to that specific ride on `/passaggi` (highlight + open the relevant dialog), instead of just landing on the list.
+Let users cancel their own ride join requests (both `pending` and `accepted`) directly from the Passaggi list. Once cancelled, the existing "Richiedi di nuovo" (ask again) button already handles re-requesting.
 
-## Context
-`src/pages/Passaggi.tsx` already supports `location.state = { focusRideId, mode }`:
-- Scrolls to + highlights the ride card.
-- `mode: "manage"` opens the driver's request management dialog (if user is the driver).
-- `mode: "request"` opens the requester's edit dialog (if they have a request).
+## Changes
 
-Notifications carry `data.ride_post_id` (already referenced in `NotificationsButton.handleItemClick`) and a `type` such as `ride_request_new` (sent to drivers), `ride_request_accepted` / `ride_request_rejected` (sent to requesters).
+### `src/pages/Passaggi.tsx`
+In the per-ride card (the `myReq` block, ~lines 254–276), when `myReq.status` is `pending` or `accepted`, add a small "Annulla richiesta" link/button under the status badge:
 
-## Change
-Edit `src/components/NotificationsButton.tsx` `handleItemClick`:
+- For `pending`: keep the existing "Modifica" link, and add a second "Annulla richiesta" link in destructive color.
+- For `accepted`: add an "Annulla posto" link in destructive color (the user is giving up their confirmed seat).
+- Both call a new `cancelMyRequest(myReq.id)` handler that:
+  1. Opens a `confirmDialog` ("Annullare la richiesta?" / "Cancel your request?", destructive).
+  2. Updates the row: `supabase.from("ride_requests").update({ status: "cancelled" }).eq("id", myReq.id)`.
+  3. On success, toast + `load()`.
 
-- Determine the mode from `n.type`:
-  - `ride_request_new` → `"manage"` (driver gets notified of incoming request).
-  - `ride_request_accepted` / `ride_request_rejected` → `"request"` (requester views their request).
-  - Other ride-prefixed types → no mode, just focus.
-- If `n.data?.ride_post_id` exists, `navigate("/passaggi", { state: { focusRideId, mode } })`.
-- Fallback to current behavior (plain `/passaggi`) when no ride id is present.
-- Close the popover after navigation.
+The existing RLS policy `Requester update own ride request` already permits this (status != rejected), and the existing `cancelled`-branch UI in the card will then show the "Richiedi di nuovo" button.
 
-No DB or i18n changes needed.
+### `src/lib/i18n.ts`
+Add new keys:
+- `cancelRequest` → IT: "Annulla richiesta", EN: "Cancel request"
+- `cancelSeat` → IT: "Annulla posto", EN: "Cancel seat"
+- `cancelRequestConfirmTitle` → IT: "Annullare la richiesta?", EN: "Cancel this request?"
+- `cancelRequestConfirmDesc` → IT: "Potrai richiederla di nuovo in seguito.", EN: "You can request again later."
+- `requestCancelled` → IT: "Richiesta annullata", EN: "Request cancelled"
 
-## Files
-- `src/components/NotificationsButton.tsx`
+## Notes
+- No DB or RLS changes needed.
+- No notification trigger fires for requester-initiated cancellations on their own rows (the existing `notify_on_ride_request_status` only notifies the requester, not the driver). If you want the driver to also get notified when a passenger cancels, that's a separate follow-up — let me know and I'll add it.
