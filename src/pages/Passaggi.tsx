@@ -97,6 +97,26 @@ export default function Passaggi() {
     load();
   }, [load]);
 
+  const cancelMyRequest = async (id: string) => {
+    const ok = await confirmDialog({
+      title: t("cancelRequestConfirmTitle"),
+      description: t("cancelRequestConfirmDesc"),
+      confirmText: t("cancelRequest"),
+      destructive: true,
+    });
+    if (!ok) return;
+    const { error } = await supabase
+      .from("ride_requests")
+      .update({ status: "cancelled" })
+      .eq("id", id);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success(t("requestCancelled"));
+    load();
+  };
+
   const location = useLocation();
   const [highlightId, setHighlightId] = useState<string | null>(null);
   const focusHandledRef = useRef(false);
@@ -263,14 +283,31 @@ export default function Passaggi() {
                       {myReq.status === "rejected" && t("statusRejected")}
                     </div>
                     {myReq.status === "pending" && (
+                      <div className="flex items-center justify-center gap-3">
+                        <button
+                          onClick={() => {
+                            setOpenRequestFor(p);
+                            setEditingRequest(myReq);
+                          }}
+                          className="text-[10px] text-muted-foreground hover:text-foreground font-semibold"
+                        >
+                          {t("edit")}
+                        </button>
+                        <span className="text-[10px] text-muted-foreground">·</span>
+                        <button
+                          onClick={() => cancelMyRequest(myReq.id)}
+                          className="text-[10px] text-destructive hover:opacity-80 font-semibold"
+                        >
+                          {t("cancelRequest")}
+                        </button>
+                      </div>
+                    )}
+                    {myReq.status === "accepted" && (
                       <button
-                        onClick={() => {
-                          setOpenRequestFor(p);
-                          setEditingRequest(myReq);
-                        }}
-                        className="text-[10px] text-center text-muted-foreground hover:text-foreground font-semibold"
+                        onClick={() => cancelMyRequest(myReq.id)}
+                        className="text-[10px] text-center text-destructive hover:opacity-80 font-semibold"
                       >
-                        {t("edit")}
+                        {t("cancelSeat")}
                       </button>
                     )}
                   </div>
