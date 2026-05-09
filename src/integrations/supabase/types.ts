@@ -544,6 +544,7 @@ export type Database = {
       }
     }
     Functions: {
+      delete_past_ride_posts: { Args: never; Returns: undefined }
       get_my_lie_guesses: {
         Args: never
         Returns: {
