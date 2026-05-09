@@ -63,7 +63,7 @@ const requestSchema = z.object({
 
 export default function Passaggi() {
   const { t, lang } = useT();
-  const { user } = useApp();
+  const { user, isAdmin } = useApp();
   const confirmDialog = useConfirm();
   const [posts, setPosts] = useState<RidePost[]>([]);
   const [myRequests, setMyRequests] = useState<Record<string, RideRequest>>({});
