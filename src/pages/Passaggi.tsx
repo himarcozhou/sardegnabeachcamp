@@ -63,7 +63,7 @@ const requestSchema = z.object({
 
 export default function Passaggi() {
   const { t, lang } = useT();
-  const { user } = useApp();
+  const { user, isAdmin } = useApp();
   const confirmDialog = useConfirm();
   const [posts, setPosts] = useState<RidePost[]>([]);
   const [myRequests, setMyRequests] = useState<Record<string, RideRequest>>({});
@@ -188,15 +188,17 @@ export default function Passaggi() {
                   <Car className="h-3 w-3" /> {lang === "it" ? "Guidatore" : "Driver"}
                 </div>
               </div>
-              {isOwner && (
+              {(isOwner || isAdmin) && (
                 <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setEditingPost(p)}
-                    className="text-muted-foreground hover:text-foreground"
-                    aria-label="Edit"
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </button>
+                  {isOwner && (
+                    <button
+                      onClick={() => setEditingPost(p)}
+                      className="text-muted-foreground hover:text-foreground"
+                      aria-label="Edit"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </button>
+                  )}
                   <button
                     onClick={async () => {
                       const ok = await confirmDialog({
