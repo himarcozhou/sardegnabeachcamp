@@ -220,19 +220,21 @@ export default function Profile() {
       </div>
 
       {/* My Facts */}
-      <section>
-        <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-2">{t("myFacts")}</h3>
-        <ul className="space-y-2">
-          {profile.three_facts?.map((f, i) => (
-            <li key={i} className={`rounded-2xl p-3 text-sm border ${
-              i === lieIndex ? "bg-accent/15 border-accent" : "bg-card border-border"
-            }`}>
-              {f.text}
-              {i === lieIndex && <span className="ml-2 text-xs font-bold text-accent">🤥 {t("isLie")}</span>}
-            </li>
-          ))}
-        </ul>
-      </section>
+      {profile.three_facts && profile.three_facts.length > 0 && (
+        <section>
+          <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-2">{t("myFacts")}</h3>
+          <ul className="space-y-2">
+            {profile.three_facts.map((f, i) => (
+              <li key={i} className={`rounded-2xl p-3 text-sm border ${
+                i === lieIndex ? "bg-accent/15 border-accent" : "bg-card border-border"
+              }`}>
+                {f.text}
+                {i === lieIndex && <span className="ml-2 text-xs font-bold text-accent">🤥 {t("isLie")}</span>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {/* Settings */}
       <section className="rounded-2xl bg-card border border-border p-4 shadow-card space-y-4">
