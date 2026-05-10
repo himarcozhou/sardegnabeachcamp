@@ -223,6 +223,25 @@ export default function Onboarding() {
     nav("/", { replace: true });
   };
 
+  const skipFacts = async () => {
+    if (!user) {
+      toast.error(lang === "it" ? "Sessione mancante" : "Missing session");
+      return;
+    }
+    setSaving(true);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ three_facts: null, onboarded: true })
+      .eq("id", user.id);
+    setSaving(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    await refreshProfile();
+    nav("/", { replace: true });
+  };
+
   const updateFact = (i: number, patch: Partial<{ text: string; is_lie: boolean }>) => {
     setFacts((prev) => {
       const next = [...prev];
