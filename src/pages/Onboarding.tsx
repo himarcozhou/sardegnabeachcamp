@@ -465,6 +465,14 @@ export default function Onboarding() {
             >
               {saving ? t("loading") : t("completeProfile")}
             </Button>
+            <button
+              type="button"
+              onClick={skipFacts}
+              disabled={saving}
+              className="w-full text-sm text-muted-foreground hover:text-foreground transition-smooth py-2"
+            >
+              {t("skip")}
+            </button>
           </div>
         )}
       </div>
