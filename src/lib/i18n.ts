@@ -33,6 +33,7 @@ export const dict = {
     fact: "Fatto",
     isLie: "Questa è la bugia 🤥",
     completeProfile: "Completa profilo",
+    skip: "Salta",
     announcements: "Annunci",
     stats: "Statistiche",
     participants: "Partecipanti",
