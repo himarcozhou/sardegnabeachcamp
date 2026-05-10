@@ -221,6 +221,7 @@ export const dict = {
     fact: "Fact",
     isLie: "This is the lie 🤥",
     completeProfile: "Complete profile",
+    skip: "Skip",
     announcements: "Announcements",
     stats: "Stats",
     participants: "Participants",
