@@ -87,8 +87,8 @@ export default function Welcome() {
     <div className="min-h-screen flex flex-col bg-background overflow-hidden">
       {/* Top bar */}
       <div
-        className="flex items-center justify-end px-5 pb-2"
-        style={{ paddingTop: "calc(env(safe-area-inset-top) + 3rem)" }}
+        className="flex items-center justify-end px-5 pt-2 pb-1"
+        style={{ paddingTop: "calc(env(safe-area-inset-top) + 0.5rem)" }}
       >
         <LangToggle size="sm" />
       </div>
