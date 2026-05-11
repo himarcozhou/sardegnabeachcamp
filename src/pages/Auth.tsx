@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Sparkles } from "lucide-react";
 import { LangToggle } from "@/components/LangToggle";
+import logo from "@/assets/logo.png";
 
 const credSchema = z.object({
   username: z
@@ -75,15 +75,15 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <div className="flex items-center justify-end px-5 pt-12 pb-2 safe-top">
+    <div className="min-h-screen flex flex-col bg-background safe-top safe-bottom">
+      <div className="flex items-center justify-end px-5 pt-2 pb-1">
         <LangToggle size="sm" />
       </div>
-      <div className="flex-1 flex flex-col items-center justify-center px-6 py-10 safe-bottom">
+      <div className="flex-1 flex flex-col items-center justify-center px-6 py-4">
         <div className="w-full max-w-sm">
-          <div className="text-center mb-8">
-            <div className="inline-flex h-16 w-16 rounded-2xl gradient-festive items-center justify-center mb-4 shadow-glow">
-              <Sparkles className="h-8 w-8 text-white" />
+          <div className="text-center mb-5">
+            <div className="inline-flex h-14 w-14 rounded-2xl gradient-festive items-center justify-center mb-3 shadow-glow">
+              <img src={logo} alt="" width={512} height={512} loading="lazy" className="h-10 w-10 object-contain" />
             </div>
             <h1 className="text-3xl font-extrabold text-foreground mb-1">
               {t("appName")}

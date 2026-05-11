@@ -87,8 +87,8 @@ export default function Welcome() {
     <div className="min-h-screen flex flex-col bg-background overflow-hidden">
       {/* Top bar */}
       <div
-        className="flex items-center justify-end px-5 pb-2"
-        style={{ paddingTop: "calc(env(safe-area-inset-top) + 3rem)" }}
+        className="flex items-center justify-end px-5 pt-2 pb-1"
+        style={{ paddingTop: "calc(env(safe-area-inset-top) + 0.5rem)" }}
       >
         <LangToggle size="sm" />
       </div>
@@ -113,13 +113,13 @@ export default function Welcome() {
                   width={832}
                   height={1024}
                   loading={i === 0 ? "eager" : "lazy"}
-                  className="w-full h-full object-contain max-h-[50vh] rounded-2xl"
+                  className="w-full h-full object-contain max-h-[42vh] rounded-2xl"
                 />
               </div>
 
-              <div className="w-full max-w-sm text-center mt-6 mb-2">
-                <h1 className="text-3xl font-extrabold mb-3 text-foreground">{s.title}</h1>
-                <p className="text-base text-muted-foreground leading-relaxed">{s.desc}</p>
+              <div className="w-full max-w-sm text-center mt-4 mb-2">
+                <h1 className="text-2xl font-extrabold mb-2 text-foreground">{s.title}</h1>
+                <p className="text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
               </div>
             </div>
           ))}
@@ -127,7 +127,7 @@ export default function Welcome() {
       </div>
 
       {/* Footer */}
-      <div className="px-8 pt-4 space-y-8" style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 3.5rem)" }}>
+      <div className="px-8 pt-2 space-y-4" style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 1rem)" }}>
         <div className="flex items-center justify-between gap-4">
           <button
             onClick={finish}

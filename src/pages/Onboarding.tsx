@@ -12,7 +12,8 @@ import { Avatar } from "@/components/Avatar";
 import { LangToggle } from "@/components/LangToggle";
 import { toast } from "sonner";
 import { awardToast } from "@/lib/utils";
-import { Instagram, Sparkles, Camera, ArrowLeft, Phone } from "lucide-react";
+import { Instagram, Camera, ArrowLeft, Phone } from "lucide-react";
+import logo from "@/assets/logo.png";
 import { hasSeenWelcome } from "@/pages/Welcome";
 
 const factSchema = z.object({
@@ -252,7 +253,7 @@ export default function Onboarding() {
   return (
     <div className="min-h-screen bg-background flex flex-col safe-top safe-bottom">
       {/* Top bar */}
-      <div className="flex items-center justify-between px-5 pt-10 pb-2">
+      <div className="flex items-center justify-between px-5 pt-2 pb-1">
         {step === 1 && !user ? (
           <button
             onClick={() => setStep(0)}
@@ -267,9 +268,9 @@ export default function Onboarding() {
         <LangToggle size="sm" />
       </div>
 
-      <div className="flex-1 px-5 py-6 max-w-md mx-auto w-full">
-        <div className="flex items-center gap-2 mb-6">
-          <Sparkles className="h-6 w-6 text-primary" />
+      <div className="flex-1 px-5 py-4 max-w-md mx-auto w-full">
+        <div className="flex items-center gap-2 mb-4">
+          <img src={logo} alt="" width={512} height={512} loading="lazy" className="h-7 w-7 object-contain" />
           <h1 className="text-2xl font-extrabold text-foreground">
             {step === 0 ? (lang === "it" ? "Come ti chiami?" : "What's your name?") : t("threeFactsTitle")}
           </h1>
