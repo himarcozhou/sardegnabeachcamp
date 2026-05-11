@@ -5,10 +5,11 @@ import { useApp } from "@/contexts/AppContext";
 import { useT } from "@/lib/i18n";
 import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/ui/button";
-import { Megaphone, Trophy, Users, MessageSquareLock, Sparkles, Star } from "lucide-react";
+import { Megaphone, Trophy, Users, MessageSquareLock, Star } from "lucide-react";
 import { RidesSection } from "@/components/RidesSection";
 import { NotificationsToggle } from "@/components/NotificationsToggle";
 import { InstallButton } from "@/components/InstallButton";
+import logo from "@/assets/logo.png";
 
 const INSTALL_CARD_DISMISS_KEY = "install_card_dismissed_session";
 
@@ -69,7 +70,7 @@ export default function Home() {
       {/* Hero */}
       <section className="rounded-3xl gradient-hero text-white p-5 shadow-glow">
         <div className="flex items-center gap-2 mb-1">
-          <Sparkles className="h-4 w-4" />
+          <img src={logo} alt="" width={512} height={512} loading="lazy" className="h-4 w-4 object-contain invert" />
           <span className="text-xs uppercase font-bold tracking-wider opacity-90">{t("welcome")}</span>
         </div>
         <h2 className="text-2xl font-extrabold mb-3">
