@@ -12,7 +12,8 @@ import { Avatar } from "@/components/Avatar";
 import { LangToggle } from "@/components/LangToggle";
 import { toast } from "sonner";
 import { awardToast } from "@/lib/utils";
-import { Instagram, Sparkles, Camera, ArrowLeft, Phone } from "lucide-react";
+import { Instagram, Camera, ArrowLeft, Phone } from "lucide-react";
+import logo from "@/assets/logo.png";
 import { hasSeenWelcome } from "@/pages/Welcome";
 
 const factSchema = z.object({
