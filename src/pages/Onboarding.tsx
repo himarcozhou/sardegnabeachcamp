@@ -24,10 +24,7 @@ const makeAccountSchema = (msgs: { tooShort: string; needsNumber: string }) =>
   z.object({
     name: z.string().trim().min(1).max(40),
     surname: z.string().trim().min(1).max(40),
-    password: z
-      .string()
-      .min(6, msgs.tooShort)
-      .regex(/\d/, msgs.needsNumber),
+    password: z.string().min(6, msgs.tooShort).regex(/\d/, msgs.needsNumber),
   });
 
 function makeEmail(name: string, surname: string) {
@@ -66,7 +63,7 @@ export default function Onboarding() {
       { text: "", is_lie: false },
       { text: "", is_lie: false },
       { text: "", is_lie: false },
-    ]
+    ],
   );
   const [saving, setSaving] = useState(false);
 
@@ -94,9 +91,7 @@ export default function Onboarding() {
     if (!avatarFile) return null;
     const ext = avatarFile.name.split(".").pop() || "jpg";
     const path = `${uid}/avatar-${Date.now()}.${ext}`;
-    const { error: upErr } = await supabase.storage
-      .from("avatars")
-      .upload(path, avatarFile, { upsert: true });
+    const { error: upErr } = await supabase.storage.from("avatars").upload(path, avatarFile, { upsert: true });
     if (upErr) {
       toast.error(upErr.message);
       return null;
@@ -229,10 +224,7 @@ export default function Onboarding() {
       return;
     }
     setSaving(true);
-    const { error } = await supabase
-      .from("profiles")
-      .update({ three_facts: null, onboarded: true })
-      .eq("id", user.id);
+    const { error } = await supabase.from("profiles").update({ three_facts: null, onboarded: true }).eq("id", user.id);
     setSaving(false);
     if (error) {
       toast.error(error.message);
@@ -260,7 +252,7 @@ export default function Onboarding() {
   return (
     <div className="min-h-screen bg-background flex flex-col safe-top safe-bottom">
       {/* Top bar */}
-      <div className="flex items-center justify-between px-5 pt-12 pb-2">
+      <div className="flex items-center justify-between px-5 pt-4 pb-2">
         {step === 1 && !user ? (
           <button
             onClick={() => setStep(0)}
@@ -279,20 +271,14 @@ export default function Onboarding() {
         <div className="flex items-center gap-2 mb-6">
           <Sparkles className="h-6 w-6 text-primary" />
           <h1 className="text-2xl font-extrabold text-foreground">
-            {step === 0
-              ? lang === "it"
-                ? "Come ti chiami?"
-                : "What's your name?"
-              : t("threeFactsTitle")}
+            {step === 0 ? (lang === "it" ? "Come ti chiami?" : "What's your name?") : t("threeFactsTitle")}
           </h1>
         </div>
 
         {step === 0 && (
           <div className="space-y-5 animate-fade-in">
             <p className="text-sm text-muted-foreground">
-              {lang === "it"
-                ? "Crea il tuo profilo per iniziare la festa."
-                : "Create your profile to start the party."}
+              {lang === "it" ? "Crea il tuo profilo per iniziare la festa." : "Create your profile to start the party."}
             </p>
 
             {/* Avatar picker */}
@@ -303,23 +289,12 @@ export default function Onboarding() {
                 className="relative group"
                 aria-label={t("avatarPhoto")}
               >
-                <Avatar
-                  name={name || "?"}
-                  surname={surname}
-                  url={avatarPreview}
-                  size={88}
-                />
+                <Avatar name={name || "?"} surname={surname} url={avatarPreview} size={88} />
                 <span className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-card">
                   <Camera className="h-4 w-4" />
                 </span>
               </button>
-              <input
-                ref={fileRef}
-                type="file"
-                accept="image/*"
-                hidden
-                onChange={onPickAvatar}
-              />
+              <input ref={fileRef} type="file" accept="image/*" hidden onChange={onPickAvatar} />
               <span className="text-xs text-muted-foreground">
                 {t("avatarPhoto")} <span className="opacity-70">({t("optional")})</span>
               </span>
@@ -338,9 +313,7 @@ export default function Onboarding() {
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="surname">
-                  {t("surname")}
-                </Label>
+                <Label htmlFor="surname">{t("surname")}</Label>
                 <Input
                   id="surname"
                   value={surname}
@@ -370,8 +343,7 @@ export default function Onboarding() {
 
             <div className="space-y-1.5">
               <Label htmlFor="ig">
-                {t("instagram")}{" "}
-                <span className="text-muted-foreground">({t("optional")})</span>
+                {t("instagram")} <span className="text-muted-foreground">({t("optional")})</span>
               </Label>
               <div className="relative">
                 <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -388,8 +360,7 @@ export default function Onboarding() {
 
             <div className="space-y-1.5">
               <Label htmlFor="phone">
-                {t("phone")}{" "}
-                <span className="text-muted-foreground">({t("optional")})</span>
+                {t("phone")} <span className="text-muted-foreground">({t("optional")})</span>
               </Label>
               <div className="relative">
                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -429,10 +400,7 @@ export default function Onboarding() {
           <div className="space-y-4 animate-fade-in">
             <p className="text-sm text-muted-foreground">{t("threeFactsHelp")}</p>
             {facts.map((f, i) => (
-              <div
-                key={i}
-                className="rounded-2xl border border-border bg-card p-4 shadow-card space-y-2"
-              >
+              <div key={i} className="rounded-2xl border border-border bg-card p-4 shadow-card space-y-2">
                 <div className="flex items-center justify-between">
                   <Label>
                     {t("fact")} {i + 1}
