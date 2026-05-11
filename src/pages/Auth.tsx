@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Sparkles } from "lucide-react";
 import { LangToggle } from "@/components/LangToggle";
+import logo from "@/assets/logo.png";
 
 const credSchema = z.object({
   username: z
