@@ -252,7 +252,7 @@ export default function Onboarding() {
   return (
     <div className="min-h-screen bg-background flex flex-col safe-top safe-bottom">
       {/* Top bar */}
-      <div className="flex items-center justify-between px-5 pt-4 pb-2">
+      <div className="flex items-center justify-between px-5 pt-10 pb-2">
         {step === 1 && !user ? (
           <button
             onClick={() => setStep(0)}
